@@ -8,26 +8,28 @@ import glob
 from PIL import Image
 
 class MushroomDataset(Dataset):
-    def __init__(self, root_dir, transforms=None):
+    def __init__(self, root, transform=None):
         """
         Args:
-            root_dir (string): Path to the root dir of the dataset.
+            root (string): Path to the root dir of the dataset.
             transform (callable, optional): Optional transform to appy.
         """
-        self.root_dir = root_dir
-        self.transforms = transforms
+        self.root = root
+        self.transform = transform
         self.superclasses = set()
         self.subclasses = set()
+        self.classes = set()
 
         # Create the dictionary
         self.dico = dict()
 
         idx = 0
-        dir_list = os.listdir(root_dir)
+        dir_list = os.listdir(root)
         for direct in dir_list:
-            class_path = os.path.join(root_dir, direct)
-            self.superclasses.add(class_path.split("_")[1])
-            self.subclasses.add(class_path.split("_")[2].split(" ")[0])
+            class_path = os.path.join(root, direct)
+            self.superclasses.add(direct.split("_")[0])
+            self.subclasses.add(direct.split("_")[1])
+            self.classes.add(direct)
             img_path_list = glob.glob(class_path + "/*")
             for img_path in img_path_list:
                 self.dico[idx] = img_path
@@ -59,10 +61,11 @@ class MushroomDataset(Dataset):
         direct = self.dico[idx].split("/")[-2]
 
         sample = {"image": image,
-                "superclass": direct.split("_")[1],
-                "subclass": direct.split("_")[2].split(" ")[0]}
+                "superclass": direct.split("_")[0],
+                "subclass": direct.split("_")[1],
+                "class": direct}
 
-        if(self.transforms):
-            sample["image"] = self.transforms(sample["image"])
+        if(self.transform):
+            sample["image"] = self.transform(sample["image"])
 
         return sample
