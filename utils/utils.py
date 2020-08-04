@@ -19,11 +19,13 @@ def measure_time(label):
     start = time.time()
     yield
     end = time.time()
-    print('Duration of [{}]: {}'.format(label,
-                                        datetime.timedelta(seconds=end-start)))
+    print(
+        "Duration of [{}]: {}".format(
+            label, datetime.timedelta(seconds=end - start)
+        )
+    )
 
 
 def format_label(label):
-    label = label.split('_')[1]#takes only the superclass
+    label = label.split("_")[1]  # takes only the superclass
     return label
-

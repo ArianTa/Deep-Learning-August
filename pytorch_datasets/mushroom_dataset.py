@@ -7,6 +7,7 @@ from torchvision import transforms, utils
 import glob
 from PIL import Image
 
+
 class MushroomDataset(Dataset):
     def __init__(self, root, transform=None):
         """
@@ -56,16 +57,18 @@ class MushroomDataset(Dataset):
             idx = idx.tolist()
 
         image = io.imread(self.dico[idx])
-        image = Image.fromarray(image) 
+        image = Image.fromarray(image)
 
         direct = self.dico[idx].split("/")[-2]
 
-        sample = {"image": image,
-                "superclass": direct.split("_")[0],
-                "subclass": direct.split("_")[1],
-                "class": direct}
+        sample = {
+            "image": image,
+            "superclass": direct.split("_")[0],
+            "subclass": direct.split("_")[1],
+            "class": direct,
+        }
 
-        if(self.transform):
+        if self.transform:
             sample["image"] = self.transform(sample["image"])
 
         return sample
