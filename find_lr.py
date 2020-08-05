@@ -3,29 +3,33 @@ import matplotlib.pyplot as plt
 from torch.optim.lr_scheduler import _LRScheduler
 
 
-def count_parameters(model):
+def count_parameters(model,):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
 class LRFinder:
-    def __init__(self, model, optimizer, criterion, device):
+    def __init__(
+        self, model, optimizer, criterion, device,
+    ):
 
         self.optimizer = optimizer
         self.model = model
         self.criterion = criterion
         self.device = device
 
-        torch.save(model.state_dict(), "init_params.pt")
+        torch.save(
+            model.state_dict(), "init_params.pt",
+        )
 
     def range_test(
-        self, iterator, end_lr=10, num_iter=100, smooth_f=0.05, diverge_th=5
+        self, iterator, end_lr=10, num_iter=100, smooth_f=0.05, diverge_th=5,
     ):
 
         lrs = []
         losses = []
         best_loss = float("inf")
 
-        lr_scheduler = ExponentialLR(self.optimizer, end_lr, num_iter)
+        lr_scheduler = ExponentialLR(self.optimizer, end_lr, num_iter,)
 
         iterator = IteratorWrapper(iterator)
 
@@ -53,22 +57,27 @@ class LRFinder:
         # reset model to initial parameters
         self.model.load_state_dict(torch.load("init_params.pt"))
 
-        return lrs, losses
+        return (
+            lrs,
+            losses,
+        )
 
-    def _train_batch(self, iterator):
+    def _train_batch(
+        self, iterator,
+    ):
 
         self.model.train()
 
         self.optimizer.zero_grad()
 
-        x, y = iterator.get_batch()
+        (x, y,) = iterator.get_batch()
 
         x = x.to(self.device)
         y = y.to(self.device)
 
-        y_pred, _ = self.model(x)
+        (y_pred, _,) = self.model(x)
 
-        loss = self.criterion(y_pred, y)
+        loss = self.criterion(y_pred, y,)
 
         loss.backward()
 
@@ -78,12 +87,16 @@ class LRFinder:
 
 
 class ExponentialLR(_LRScheduler):
-    def __init__(self, optimizer, end_lr, num_iter, last_epoch=-1):
+    def __init__(
+        self, optimizer, end_lr, num_iter, last_epoch=-1,
+    ):
         self.end_lr = end_lr
         self.num_iter = num_iter
-        super(ExponentialLR, self).__init__(optimizer, last_epoch)
+        super(ExponentialLR, self,).__init__(
+            optimizer, last_epoch,
+        )
 
-    def get_lr(self):
+    def get_lr(self,):
         curr_iter = self.last_epoch + 1
         r = curr_iter / self.num_iter
         return [
@@ -92,24 +105,31 @@ class ExponentialLR(_LRScheduler):
 
 
 class IteratorWrapper:
-    def __init__(self, iterator):
+    def __init__(
+        self, iterator,
+    ):
         self.iterator = iterator
         self._iterator = iter(iterator)
 
-    def __next__(self):
+    def __next__(self,):
         try:
-            inputs, labels = next(self._iterator)
+            (inputs, labels,) = next(self._iterator)
         except StopIteration:
             self._iterator = iter(self.iterator)
-            inputs, labels, *_ = next(self._iterator)
+            (inputs, labels, *_,) = next(self._iterator)
 
-        return inputs, labels
+        return (
+            inputs,
+            labels,
+        )
 
-    def get_batch(self):
+    def get_batch(self,):
         return next(self)
 
 
-def plot_lr_finder(lrs, losses, skip_start=5, skip_end=5):
+def plot_lr_finder(
+    lrs, losses, skip_start=5, skip_end=5,
+):
 
     if skip_end == 0:
         lrs = lrs[skip_start:]
@@ -118,11 +138,15 @@ def plot_lr_finder(lrs, losses, skip_start=5, skip_end=5):
         lrs = lrs[skip_start:-skip_end]
         losses = losses[skip_start:-skip_end]
 
-    fig = plt.figure(figsize=(16, 8))
-    ax = fig.add_subplot(1, 1, 1)
-    ax.plot(lrs, losses)
+    fig = plt.figure(figsize=(16, 8,))
+    ax = fig.add_subplot(1, 1, 1,)
+    ax.plot(
+        lrs, losses,
+    )
     ax.set_xscale("log")
     ax.set_xlabel("Learning rate")
     ax.set_ylabel("Loss")
-    ax.grid(True, "both", "x")
+    ax.grid(
+        True, "both", "x",
+    )
     plt.show()

@@ -1,15 +1,26 @@
 import os
 import pandas as pd
-from skimage import io, transform
+from skimage import (
+    io,
+    transform,
+)
 import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, utils
+from torch.utils.data import (
+    Dataset,
+    DataLoader,
+)
+from torchvision import (
+    transforms,
+    utils,
+)
 import glob
 from PIL import Image
 
 
 class MushroomDataset(Dataset):
-    def __init__(self, root, transform=None):
+    def __init__(
+        self, root, transform=None,
+    ):
         """
         Args:
             root (string): Path to the root dir of the dataset.
@@ -27,7 +38,7 @@ class MushroomDataset(Dataset):
         idx = 0
         dir_list = os.listdir(root)
         for direct in dir_list:
-            class_path = os.path.join(root, direct)
+            class_path = os.path.join(root, direct,)
             self.superclasses.add(direct.split("_")[0])
             self.subclasses.add(direct.split("_")[1])
             self.classes.add(direct)
@@ -36,14 +47,16 @@ class MushroomDataset(Dataset):
                 self.dico[idx] = img_path
                 idx += 1
 
-    def __len__(self):
+    def __len__(self,):
         """
         Returns:
             then number of images in the dataset
         """
         return len(self.dico)
 
-    def __getitem__(self, idx):
+    def __getitem__(
+        self, idx,
+    ):
         """
         Args:
             idx (integer): Index of the queried image

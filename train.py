@@ -33,7 +33,10 @@ from collections import namedtuple
 import skimage
 
 from pydoc import locate
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import (
+    Dataset,
+    DataLoader,
+)
 from utils import measure_time
 
 from find_lr import *
@@ -43,7 +46,9 @@ from models import *
 import utils
 
 
-def train(model, iterator, optimizer, criterion, scheduler, device):
+def train(
+    model, iterator, optimizer, criterion, scheduler, device,
+):
 
     epoch_loss = 0
     epoch_acc_1 = 0
@@ -55,7 +60,7 @@ def train(model, iterator, optimizer, criterion, scheduler, device):
         i = 0
         total = len(iterator)
 
-    for (x, y) in iterator:
+    for (x, y,) in iterator:
         if DEBUG:
             i += 1
             print(f"{i}th iteration, total is {total}")
@@ -65,11 +70,11 @@ def train(model, iterator, optimizer, criterion, scheduler, device):
 
         optimizer.zero_grad()
 
-        y_pred, _ = model(x)
+        (y_pred, _,) = model(x)
 
-        loss = criterion(y_pred, y)
+        loss = criterion(y_pred, y,)
 
-        acc_1, acc_5 = utils.calculate_topk_accuracy(y_pred, y)
+        (acc_1, acc_5,) = utils.calculate_topk_accuracy(y_pred, y,)
 
         loss.backward()
 
@@ -85,10 +90,16 @@ def train(model, iterator, optimizer, criterion, scheduler, device):
     epoch_acc_1 /= len(iterator)
     epoch_acc_5 /= len(iterator)
 
-    return epoch_loss, epoch_acc_1, epoch_acc_5
+    return (
+        epoch_loss,
+        epoch_acc_1,
+        epoch_acc_5,
+    )
 
 
-def evaluate(model, iterator, criterion, device):
+def evaluate(
+    model, iterator, criterion, device,
+):
 
     epoch_loss = 0
     epoch_acc_1 = 0
@@ -98,16 +109,16 @@ def evaluate(model, iterator, criterion, device):
 
     with torch.no_grad():
 
-        for (x, y) in iterator:
+        for (x, y,) in iterator:
 
             x = x.to(device)
             y = y.to(device)
 
-            y_pred, _ = model(x)
+            (y_pred, _,) = model(x)
 
-            loss = criterion(y_pred, y)
+            loss = criterion(y_pred, y,)
 
-            acc_1, acc_5 = calculate_topk_accuracy(y_pred, y)
+            (acc_1, acc_5,) = calculate_topk_accuracy(y_pred, y,)
 
             epoch_loss += loss.item()
             epoch_acc_1 += acc_1.item()
@@ -117,24 +128,37 @@ def evaluate(model, iterator, criterion, device):
     epoch_acc_1 /= len(iterator)
     epoch_acc_5 /= len(iterator)
 
-    return epoch_loss, epoch_acc_1, epoch_acc_5
+    return (
+        epoch_loss,
+        epoch_acc_1,
+        epoch_acc_5,
+    )
 
 
-def epoch_time(start_time, end_time):
+def epoch_time(
+    start_time, end_time,
+):
     elapsed_time = end_time - start_time
     elapsed_mins = int(elapsed_time / 60)
     elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
-    return elapsed_mins, elapsed_secs
+    return (
+        elapsed_mins,
+        elapsed_secs,
+    )
 
 
-def find_learning_rate(star_lr, end_lr, nb_iter, iterator):
-    optimizer_lr = optim.Adam(model.parameters(), lr=star_lr)
-    lr_finder = LRFinder(model, optimizer_lr, criterion, device)
-    lrs, losses = lr_finder.range_test(iterator, end_lr, nb_iter)
-    plot_lr_finder(lrs, losses, skip_start=30, skip_end=30)
+def find_learning_rate(
+    star_lr, end_lr, nb_iter, iterator,
+):
+    optimizer_lr = optim.Adam(model.parameters(), lr=star_lr,)
+    lr_finder = LRFinder(model, optimizer_lr, criterion, device,)
+    (lrs, losses,) = lr_finder.range_test(iterator, end_lr, nb_iter,)
+    plot_lr_finder(
+        lrs, losses, skip_start=30, skip_end=30,
+    )
 
 
-def main(**kwargs):
+def main(**kwargs,):
     # can't modify locals()
     globals().update(kwargs)
 
@@ -146,29 +170,29 @@ def main(**kwargs):
         )
 
     # Creating dataset, splitting train/validation set and creating dataloaders
-    train_data = dataset(root=data_dir, transform=train_transforms)
+    train_data = dataset(root=data_dir, transform=train_transforms,)
     classes = [utils.format_label(c) for c in train_data.classes]
 
     n_train_examples = int(len(train_data) * valid_ratio)
     n_valid_examples = len(train_data) - n_train_examples
 
-    train_data, valid_data = data.random_split(
-        train_data, [n_train_examples, n_valid_examples]
+    (train_data, valid_data,) = data.random_split(
+        train_data, [n_train_examples, n_valid_examples,],
     )
 
     valid_data = copy.deepcopy(valid_data)
     valid_data.dataset.transform = test_transforms
 
     train_iterator = dataloader(
-        train_data, shuffle=True, batch_size=batch_size
+        train_data, shuffle=True, batch_size=batch_size,
     )
 
-    valid_iterator = dataloader(valid_data, batch_size=batch_size)
+    valid_iterator = dataloader(valid_data, batch_size=batch_size,)
 
     # Find learning rate instead of training
     if find_lr:
         find_learning_rate(
-            star_lr=1e-7, end_lr=10, nb_iter=100, iterator=train_iterator
+            star_lr=1e-7, end_lr=10, nb_iter=100, iterator=train_iterator,
         )
         exit(0)
 
@@ -178,7 +202,7 @@ def main(**kwargs):
     MAX_LRS = [p["lr"] for p in optimizer.param_groups]
 
     scheduler = lr_scheduler.OneCycleLR(
-        optimizer, max_lr=MAX_LRS, total_steps=TOTAL_STEPS
+        optimizer, max_lr=MAX_LRS, total_steps=TOTAL_STEPS,
     )
 
     best_valid_loss = float("inf")
@@ -186,20 +210,22 @@ def main(**kwargs):
 
         start_time = time.time()
 
-        train_loss, train_acc_1, train_acc_5 = train(
-            model, train_iterator, optimizer, criterion, scheduler, device
+        (train_loss, train_acc_1, train_acc_5,) = train(
+            model, train_iterator, optimizer, criterion, scheduler, device,
         )
-        valid_loss, valid_acc_1, valid_acc_5 = evaluate(
-            model, valid_iterator, criterion, device
+        (valid_loss, valid_acc_1, valid_acc_5,) = evaluate(
+            model, valid_iterator, criterion, device,
         )
 
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
-            torch.save(model.state_dict(), file_name)
+            torch.save(
+                model.state_dict(), file_name,
+            )
 
         end_time = time.time()
 
-        epoch_mins, epoch_secs = epoch_time(start_time, end_time)
+        (epoch_mins, epoch_secs,) = epoch_time(start_time, end_time,)
 
         print(f"Epoch: {epoch+1:02} | Epoch Time: {epoch_mins}m {epoch_secs}s")
         print(
@@ -221,13 +247,17 @@ if __name__ == "__main__":
         default="data/train",
         help="Path to root directory of the dataset",
     )
-    parser.add_argument("--gpu", action="store_true", help="Use gpu")
-    parser.add_argument("--batch", type=int, default=32, help="Batch size")
     parser.add_argument(
-        "--epochs", type=int, default=10, help="Number of epochs"
+        "--gpu", action="store_true", help="Use gpu",
     )
     parser.add_argument(
-        "--model", type=str, default="resnet152", help="CNN model to be used"
+        "--batch", type=int, default=32, help="Batch size",
+    )
+    parser.add_argument(
+        "--epochs", type=int, default=10, help="Number of epochs",
+    )
+    parser.add_argument(
+        "--model", type=str, default="resnet152", help="CNN model to be used",
     )
     parser.add_argument(
         "--save",
@@ -241,10 +271,10 @@ if __name__ == "__main__":
         help="Find the starting learning rate",
     )
     parser.add_argument(
-        "--lr", type=float, default=10e-3, help="Sarting learning rate"
+        "--lr", type=float, default=10e-3, help="Sarting learning rate",
     )
     parser.add_argument(
-        "--optimizer", type=str, default="Adam", help="Which optimizer to use"
+        "--optimizer", type=str, default="Adam", help="Which optimizer to use",
     )
     parser.add_argument(
         "--criterion",
@@ -271,7 +301,7 @@ if __name__ == "__main__":
         help="The pytorch transforms to be used",
     )
     parser.add_argument(
-        "--debug", action="store_true", help="Print debug info"
+        "--debug", action="store_true", help="Print debug info",
     )
     parser.add_argument(
         "--weights",
@@ -298,37 +328,26 @@ if __name__ == "__main__":
         criterion = nn.CrossEntropyLoss()
     # else blabla
 
-
     output_dim = len(os.listdir(args.path))
     # Get the model and is parameters that are to be optimized
     if "resnet" in args.model:
-        model, params = get_resnet_model(
-            args.model, args.lr, output_dim
-        )
+        (model, params,) = get_resnet_model(args.model, args.lr, output_dim,)
     elif "vgg" in args.model:
-        model, params = get_vgg_model(
-            args.model, args.lr, output_dim
-        )
+        (model, params,) = get_vgg_model(args.model, args.lr, output_dim,)
     elif "googlenet" in args.model:
-        model, params = get_googlenet_model(
-            args.lr, output_dim
-        )
+        (model, params,) = get_googlenet_model(args.lr, output_dim,)
     elif "densenet" in args.model:
-        model, params = get_densenet_model(
-            args.model, args.lr, output_dim
-        )
+        (model, params,) = get_densenet_model(args.model, args.lr, output_dim,)
     elif "shufflenet" in args.model:
-        model, params = get_vgg_model(
-            args.lr, output_dim
-        )
+        (model, params,) = get_shufflenet_model(args.model, args.lr, output_dim,)
     # else blabla
 
-
     if args.optimizer == "Adam":
-        optimizer = optim.Adam(params, lr=args.lr)
-    else args.optimizer == "SGD":
-        optimizer = optim.SGD(params, lr=args.lr, momentum=0.9, weight_decay=5e-4)
-
+        optimizer = optim.Adam(params, lr=args.lr,)
+    elif args.optimizer == "SGD":
+        optimizer = optim.SGD(
+            params, lr=args.lr, momentum=0.9, weight_decay=5e-4,
+        )
 
     # Load the weight into the model
     if args.weights:

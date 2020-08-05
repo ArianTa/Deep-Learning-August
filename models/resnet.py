@@ -4,40 +4,49 @@ import torchvision.models as models
 from collections import namedtuple
 import torch.optim as optim
 
-ResNetConfig = namedtuple("ResNetConfig", ["block", "n_blocks", "channels"])
+ResNetConfig = namedtuple("ResNetConfig", ["block", "n_blocks", "channels",],)
 
 
 class ResNet(nn.Module):
-    def __init__(self, config, output_dim):
+    def __init__(
+        self, config, output_dim,
+    ):
         super().__init__()
 
-        block, n_blocks, channels = config
+        (block, n_blocks, channels,) = config
         self.in_channels = channels[0]
 
         assert len(n_blocks) == len(channels) == 4
 
         self.conv1 = nn.Conv2d(
-            3, self.in_channels, kernel_size=7, stride=2, padding=3, bias=False
+            3,
+            self.in_channels,
+            kernel_size=7,
+            stride=2,
+            padding=3,
+            bias=False,
         )
         self.bn1 = nn.BatchNorm2d(self.in_channels)
         self.relu = nn.ReLU(inplace=True)
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1,)
 
-        self.layer1 = self.get_resnet_layer(block, n_blocks[0], channels[0])
+        self.layer1 = self.get_resnet_layer(block, n_blocks[0], channels[0],)
         self.layer2 = self.get_resnet_layer(
-            block, n_blocks[1], channels[1], stride=2
+            block, n_blocks[1], channels[1], stride=2,
         )
         self.layer3 = self.get_resnet_layer(
-            block, n_blocks[2], channels[2], stride=2
+            block, n_blocks[2], channels[2], stride=2,
         )
         self.layer4 = self.get_resnet_layer(
-            block, n_blocks[3], channels[3], stride=2
+            block, n_blocks[3], channels[3], stride=2,
         )
 
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(self.in_channels, output_dim)
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1,))
+        self.fc = nn.Linear(self.in_channels, output_dim,)
 
-    def get_resnet_layer(self, block, n_blocks, channels, stride=1):
+    def get_resnet_layer(
+        self, block, n_blocks, channels, stride=1,
+    ):
 
         layers = []
 
@@ -46,16 +55,18 @@ class ResNet(nn.Module):
         else:
             downsample = False
 
-        layers.append(block(self.in_channels, channels, stride, downsample))
+        layers.append(block(self.in_channels, channels, stride, downsample,))
 
-        for i in range(1, n_blocks):
-            layers.append(block(block.expansion * channels, channels))
+        for i in range(1, n_blocks,):
+            layers.append(block(block.expansion * channels, channels,))
 
         self.in_channels = block.expansion * channels
 
         return nn.Sequential(*layers)
 
-    def forward(self, x):
+    def forward(
+        self, x,
+    ):
 
         x = self.conv1(x)
         x = self.bn1(x)
@@ -68,21 +79,26 @@ class ResNet(nn.Module):
         x = self.layer4(x)
 
         x = self.avgpool(x)
-        h = torch.flatten(x, 1)
+        h = torch.flatten(x, 1,)
         x = self.fc(h)
 
-        return x, h
+        return (
+            x,
+            h,
+        )
 
 
 class Bottleneck(nn.Module):
 
     expansion = 4
 
-    def __init__(self, in_channels, out_channels, stride=1, downsample=False):
+    def __init__(
+        self, in_channels, out_channels, stride=1, downsample=False,
+    ):
         super().__init__()
 
         self.conv1 = nn.Conv2d(
-            in_channels, out_channels, kernel_size=1, stride=1, bias=False
+            in_channels, out_channels, kernel_size=1, stride=1, bias=False,
         )
         self.bn1 = nn.BatchNorm2d(out_channels)
 
@@ -116,13 +132,15 @@ class Bottleneck(nn.Module):
                 bias=False,
             )
             bn = nn.BatchNorm2d(self.expansion * out_channels)
-            downsample = nn.Sequential(conv, bn)
+            downsample = nn.Sequential(conv, bn,)
         else:
             downsample = None
 
         self.downsample = downsample
 
-    def forward(self, x):
+    def forward(
+        self, x,
+    ):
 
         i = x
 
@@ -150,7 +168,9 @@ class BasicBlock(nn.Module):
 
     expansion = 1
 
-    def __init__(self, in_channels, out_channels, stride=1, downsample=False):
+    def __init__(
+        self, in_channels, out_channels, stride=1, downsample=False,
+    ):
         super().__init__()
 
         self.conv1 = nn.Conv2d(
@@ -184,13 +204,15 @@ class BasicBlock(nn.Module):
                 bias=False,
             )
             bn = nn.BatchNorm2d(out_channels)
-            downsample = nn.Sequential(conv, bn)
+            downsample = nn.Sequential(conv, bn,)
         else:
             downsample = None
 
         self.downsample = downsample
 
-    def forward(self, x):
+    def forward(
+        self, x,
+    ):
 
         i = x
 
@@ -210,69 +232,74 @@ class BasicBlock(nn.Module):
         return x
 
 
-def get_resnet_model(model_name, learning_rate, output_dim):
+def get_resnet_model(
+    model_name, learning_rate, output_dim,
+):
     """ Helper function
     """
     # Getting the model
     if model_name == "resnet18":
         resnet_config = ResNetConfig(
             block=BasicBlock,
-            n_blocks=[2, 2, 2, 2],
-            channels=[64, 128, 256, 512],
+            n_blocks=[2, 2, 2, 2,],
+            channels=[64, 128, 256, 512,],
         )
         pretrained_model = models.resnet18(pretrained=True)
     elif model_name == "resnet34":
         resnet_config = ResNetConfig(
             block=BasicBlock,
-            n_blocks=[3, 4, 6, 3],
-            channels=[64, 128, 256, 512],
+            n_blocks=[3, 4, 6, 3,],
+            channels=[64, 128, 256, 512,],
         )
         pretrained_model = models.resnet34(pretrained=True)
     elif model_name == "resnet50":
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 4, 6, 3],
-            channels=[64, 128, 256, 512],
+            n_blocks=[3, 4, 6, 3,],
+            channels=[64, 128, 256, 512,],
         )
         pretrained_model = models.resnet50(pretrained=True)
     elif model_name == "resnet101":
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 4, 23, 3],
-            channels=[64, 128, 256, 512],
+            n_blocks=[3, 4, 23, 3,],
+            channels=[64, 128, 256, 512,],
         )
         pretrained_model = models.resnet101(pretrained=True)
     elif model_name == "resnet152":
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 8, 36, 3],
-            channels=[64, 128, 256, 512],
+            n_blocks=[3, 8, 36, 3,],
+            channels=[64, 128, 256, 512,],
         )
         pretrained_model = models.resnet152(pretrained=True)
     else:
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 8, 36, 3],
-            channels=[64, 128, 256, 512],
+            n_blocks=[3, 8, 36, 3,],
+            channels=[64, 128, 256, 512,],
         )
         pretrained_model = models.resnet152(pretrained=True)
 
     IN_FEATURES = pretrained_model.fc.in_features
 
-    fc = nn.Linear(IN_FEATURES, output_dim)
+    fc = nn.Linear(IN_FEATURES, output_dim,)
 
     pretrained_model.fc = fc
 
-    model = ResNet(resnet_config, output_dim)
+    model = ResNet(resnet_config, output_dim,)
     model.load_state_dict(pretrained_model.state_dict())
 
     params = [
-        {"params": model.conv1.parameters(), "lr": learning_rate / 10},
-        {"params": model.bn1.parameters(), "lr": learning_rate / 10},
-        {"params": model.layer1.parameters(), "lr": learning_rate / 8},
-        {"params": model.layer2.parameters(), "lr": learning_rate / 6},
-        {"params": model.layer3.parameters(), "lr": learning_rate / 4},
-        {"params": model.layer4.parameters(), "lr": learning_rate / 2},
+        {"params": model.conv1.parameters(), "lr": learning_rate / 10,},
+        {"params": model.bn1.parameters(), "lr": learning_rate / 10,},
+        {"params": model.layer1.parameters(), "lr": learning_rate / 8,},
+        {"params": model.layer2.parameters(), "lr": learning_rate / 6,},
+        {"params": model.layer3.parameters(), "lr": learning_rate / 4,},
+        {"params": model.layer4.parameters(), "lr": learning_rate / 2,},
         {"params": model.fc.parameters()},
     ]
-    return model, params
+    return (
+        model,
+        params,
+    )
