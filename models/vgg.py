@@ -67,7 +67,17 @@ def get_vgg_model(model_name, learning_rate, output_dim):
     """
     # Getting the model
     if "vgg11" in model_name:
+        vgg_features = cfg['vgg11']
         pretrained_model = models.vgg11_bn(pretrained=True)
+    if "vgg13" in model_name:
+        vgg_features = cfg['vgg13']
+        pretrained_model = models.vgg13_bn(pretrained=True)
+    if "vgg16" in model_name:
+        vgg_features = cfg['vgg16']
+        pretrained_model = models.vgg16_bn(pretrained=True)
+    if "vgg19" in model_name:
+        vgg_features = cfg['vgg19']
+        pretrained_model = models.vgg19_bn(pretrained=True)
 
     IN_FEATURES = pretrained_model.Linear.in_features
 
@@ -75,7 +85,7 @@ def get_vgg_model(model_name, learning_rate, output_dim):
 
     pretrained_model.Linear = Linear
 
-    model = vgg11_bn(resnet_config, output_dim)
+    model = VGG(make_layers(vgg_features, batch_norm=True))
     model.load_state_dict(pretrained_model.state_dict())
         
     return model, model.parameters()
