@@ -142,12 +142,7 @@ def get_densenet_model(model_name, optimizer_name, learning_rate, output_dim):
     model.load_state_dict(pretrained_model.state_dict())
 
     params = [
-        {"params": model.conv1.parameters(), "lr": learning_rate / 10},
-        {"params": model.bn1.parameters(), "lr": learning_rate / 10},
-        {"params": model.layer1.parameters(), "lr": learning_rate / 8},
-        {"params": model.layer2.parameters(), "lr": learning_rate / 6},
-        {"params": model.layer3.parameters(), "lr": learning_rate / 4},
-        {"params": model.layer4.parameters(), "lr": learning_rate / 2},
+        {"params": model.conv1.parameters(), "lr": learning_rate / 2},
         {"params": model.fc.parameters()},
     ]
 
