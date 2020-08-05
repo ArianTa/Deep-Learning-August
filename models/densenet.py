@@ -101,9 +101,9 @@ class DenseNet(nn.Module):
         output = self.conv1(x)
         output = self.features(output)
         output = self.avgpool(output)
-        output = output.view(output.size()[0], -1)
-        output = self.linear(output)
-        return output
+        h = torch.flatten(out, 1)
+        output = self.linear(h)
+        return output, h
 
     def _make_dense_layers(self, block, in_channels, nblocks):
         dense_block = nn.Sequential()
@@ -137,13 +137,14 @@ def get_densenet_model(model_name, learning_rate, output_dim):
 
     fc = nn.Linear(IN_FEATURES, output_dim)
 
-    pretrained_model.fc = fc
+    pretrained_model.classifier = fc
 
     model.load_state_dict(pretrained_model.state_dict())
-
+    """
     params = [
         {"params": model.conv1.parameters(), "lr": learning_rate / 2},
         {"params": model.fc.parameters()},
     ]
+    """
  
     return model, model.parameters()
