@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.optim.lr_scheduler import _LRScheduler
 import torchvision.transforms as transforms
 import torch.utils.data as data
 import torch.optim.lr_scheduler as lr_scheduler
@@ -205,10 +204,12 @@ def main(**kwargs):
         print(f"Epoch: {epoch+1:02} | Epoch Time: {epoch_mins}m {epoch_secs}s")
         print(
             f"\tTrain Loss: {train_loss:.3f} | Train Acc @1: {train_acc_1*100:6.2f}% | "
-            f"Train Acc @5: {train_acc_5*100:6.2f}%")
+            f"Train Acc @5: {train_acc_5*100:6.2f}%"
+        )
         print(
             f"\tValid Loss: {valid_loss:.3f} | Valid Acc @1: {valid_acc_1*100:6.2f}% | "
-            f"Valid Acc @5: {valid_acc_5*100:6.2f}%")
+            f"Valid Acc @5: {valid_acc_5*100:6.2f}%"
+        )
 
 
 if __name__ == "__main__":
@@ -220,9 +221,7 @@ if __name__ == "__main__":
         default="data/train",
         help="Path to root directory of the dataset",
     )
-    parser.add_argument(
-        "--gpu", type=str, default="n", help="Use gpu or not (y/n)"
-    )
+    parser.add_argument("--gpu", action="store_true", help="Use gpu")
     parser.add_argument("--batch", type=int, default=32, help="Batch size")
     parser.add_argument(
         "--epochs", type=int, default=10, help="Number of epochs"
@@ -238,12 +237,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--find_lr",
-        type=str,
-        default="n",
-        help="Find the starting learning rate (y/n)",
+        action="store_true",
+        help="Find the starting learning rate",
     )
     parser.add_argument(
-        "--optimizer", type=str, default="boh", help="Which optimizer to use"
+        "--lr", type=float, default=10e-3, help="Sarting learning rate"
+    )
+    parser.add_argument(
+        "--optimizer", type=str, default="Adam", help="Which optimizer to use"
     )
     parser.add_argument(
         "--criterion",
@@ -252,12 +253,9 @@ if __name__ == "__main__":
         help="Which criterion to use",
     )
     parser.add_argument(
-        "--lr", type=float, default=10e-3, help="Sarting learning rate"
-    )
-    parser.add_argument(
         "--valid_ratio",
         type=float,
-        default="0.9",
+        default=0.9,
         help="Ratio between the train set and validation set",
     )
     parser.add_argument(
@@ -273,13 +271,19 @@ if __name__ == "__main__":
         help="The pytorch transforms to be used",
     )
     parser.add_argument(
-        "--debug", type=str, default="n", help="Print debug info (y/n)"
+        "--debug", action="store_true", help="Print debug info"
+    )
+    parser.add_argument(
+        "--weights",
+        type=str,
+        default=None,
+        help="Specify a path for existing weights",
     )
 
     # Add more stuff here maybe ?
     args = parser.parse_args()
 
-    globals()["DEBUG"] = True if args.debug == "y" else False
+    globals()["DEBUG"] = True if args.debug else False
 
     # For reproducability
     SEED = args.seed
@@ -294,20 +298,35 @@ if __name__ == "__main__":
         criterion = nn.CrossEntropyLoss()
     # else blabla
 
-    # Optimizer might depend on the model's architecture, hence we get them at
-    # the same time
+
+    output_dim = len(os.listdir(args.path))
+    # Get the model and is parameters that are to be optimized
     if "resnet" in args.model:
-        model, optimizer = get_resnet_model(
-            args.model, "Adam", args.lr, len(os.listdir(args.path))
+        model, params = get_resnet_model(
+            args.model, args.lr, output_dim
+        )
+    elif "vgg" in args.model:
+        model, params = get_vgg_model(
+            args.model, args.lr, output_dim
         )
     # else blabla
+
+
+    if args.optimizer == "Adam":
+        optimizer = optim.Adam(params, lr=args.lr)
+
+
+    # Load the weight into the model
+    if args.weights:
+        with utils.measure_time(
+            "Loading weights"
+        ) if DEBUG else utils.dummy_context_mgr():
+            model.load_state_dict(torch.load(args.weights))
 
     main(
         data_dir=args.path,
         device=torch.device(
-            "cuda:0"
-            if torch.cuda.is_available() and args.gpu == "y"
-            else "cpu"
+            "cuda:0" if torch.cuda.is_available() and args.gpu else "cpu"
         ),
         batch_size=args.batch,
         epochs=args.epochs,

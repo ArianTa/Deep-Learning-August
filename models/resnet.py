@@ -68,7 +68,7 @@ class ResNet(nn.Module):
         x = self.layer4(x)
 
         x = self.avgpool(x)
-        h = x.view(x.shape[0], -1)
+        h = torch.flatten(x, 1)
         x = self.fc(h)
 
         return x, h
@@ -210,7 +210,7 @@ class BasicBlock(nn.Module):
         return x
 
 
-def get_resnet_model(model_name, optimizer_name, learning_rate, output_dim):
+def get_resnet_model(model_name, learning_rate, output_dim):
     """ Helper function
     """
     # Getting the model
@@ -275,7 +275,5 @@ def get_resnet_model(model_name, optimizer_name, learning_rate, output_dim):
         {"params": model.layer4.parameters(), "lr": learning_rate / 2},
         {"params": model.fc.parameters()},
     ]
-
-    if optimizer_name == "Adam":
-        optimizer = optim.Adam(params, lr=learning_rate)
-    return model, optimizer
+    
+    return model, params

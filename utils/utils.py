@@ -26,6 +26,14 @@ def measure_time(label):
     )
 
 
+class dummy_context_mgr:
+    def __enter__(self):
+        return None
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+
+
 def format_label(label):
     label = label.split("_")[1]  # takes only the superclass
     return label
