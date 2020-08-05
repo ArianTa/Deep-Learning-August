@@ -208,10 +208,10 @@ class ShuffleNet(nn.Module):
         x = self.stage3(x)
         x = self.stage4(x)
         x = self.avg(x)
-        x = x.view(x.size(0), -1)
-        x = self.fc(x)
+        h = torch.flatten(out, 1)
+        x = self.fc(h)
 
-        return x
+        return x,h
 
     def _make_stage(self, block, num_blocks, output_channels, stride, stage, groups):
         """make shufflenet stage
@@ -243,7 +243,7 @@ class ShuffleNet(nn.Module):
 
         return nn.Sequential(*stage)
 
-def get_shufflenet_model(optimizer_name, learning_rate, output_dim):
+def get_shufflenet_model(learning_rate, output_dim):
     """ Helper function
     """
     # Getting the model

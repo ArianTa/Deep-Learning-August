@@ -309,11 +309,25 @@ if __name__ == "__main__":
         model, params = get_vgg_model(
             args.model, args.lr, output_dim
         )
+    elif "googlenet" in args.model:
+        model, params = get_googlenet_model(
+            args.lr, output_dim
+        )
+    elif "densenet" in args.model:
+        model, params = get_densenet_model(
+            args.model, args.lr, output_dim
+        )
+    elif "shufflenet" in args.model:
+        model, params = get_vgg_model(
+            args.lr, output_dim
+        )
     # else blabla
 
 
     if args.optimizer == "Adam":
         optimizer = optim.Adam(params, lr=args.lr)
+    else args.optimizer == "SGD":
+        optimizer = optim.SGD(params, lr=args.lr, momentum=0.9, weight_decay=5e-4)
 
 
     # Load the weight into the model
