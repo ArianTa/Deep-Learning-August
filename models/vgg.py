@@ -67,6 +67,15 @@ def get_vgg_model(model_name, learning_rate, output_dim):
     """
     # Getting the model
     if "vgg11" in model_name:
-        model = models.vgg11_bn(pretrained=True)
+        pretrained_model = models.vgg11_bn(pretrained=True)
+
+    IN_FEATURES = pretrained_model.Linear.in_features
+
+    Linear = nn.Linear(IN_FEATURES, output_dim)
+
+    pretrained_model.Linear = Linear
+
+    model = vgg11_bn(resnet_config, output_dim)
+    model.load_state_dict(pretrained_model.state_dict())
         
     return model, model.parameters()
