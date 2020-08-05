@@ -221,10 +221,21 @@ def get_shufflenet_model(
     """ Helper function
     """
     # Getting the model
-    model = shufflenet_v2_x1_0(num_classes = output_dim)
-
-
-    pretrained_model = models.shufflenet_v2_x1_0(pretrained=True)
+    if model_name == "shufflenet_v2_x0_5" :
+        model = shufflenet_v2_x0_5(num_classes = output_dim)
+        pretrained_model = models.shufflenet_v2_x0_5(pretrained=True)
+    elif model_name == "shufflenet_v2_x1_0" :
+        model = shufflenet_v2_x1_0(num_classes = output_dim)
+        pretrained_model = models.shufflenet_v2_x1_0(pretrained=True)
+    elif model_name == "shufflenet_v2_x1_5" :
+        model = shufflenet_v2_x1_5(num_classes = output_dim)
+        pretrained_model = models.shufflenet_v2_x1_5(pretrained=True)
+    elif model_name == "shufflenet_v2_x2_0" :
+        model = shufflenet_v2_x2_0(num_classes = output_dim)
+        pretrained_model = models.shufflenet_v2_x2_0(pretrained=True)
+    else :
+        model = shufflenet_v2_x0_5(num_classes = output_dim)
+        pretrained_model = models.shufflenet_v2_x0_5(pretrained=True)
 
     
     IN_FEATURES = pretrained_model.fc.in_features
