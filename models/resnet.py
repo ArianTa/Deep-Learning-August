@@ -275,5 +275,4 @@ def get_resnet_model(model_name, learning_rate, output_dim):
         {"params": model.layer4.parameters(), "lr": learning_rate / 2},
         {"params": model.fc.parameters()},
     ]
-    
     return model, params
