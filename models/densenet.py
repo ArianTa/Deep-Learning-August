@@ -113,7 +113,7 @@ class DenseNet(nn.Module):
         return dense_block
     
 
-def get_densenet_model(model_name, optimizer_name, learning_rate, output_dim):
+def get_densenet_model(model_name, learning_rate, output_dim):
     """ Helper function
     """
     # Getting the model
@@ -145,7 +145,5 @@ def get_densenet_model(model_name, optimizer_name, learning_rate, output_dim):
         {"params": model.conv1.parameters(), "lr": learning_rate / 2},
         {"params": model.fc.parameters()},
     ]
-
-    if optimizer_name == "SGD":
-        optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
-    return model, optimizer
+ 
+    return model, model.parameters()

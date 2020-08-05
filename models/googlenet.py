@@ -122,7 +122,7 @@ class GoogleNet(nn.Module):
 
         return output
 
-def get_googlenet_model(optimizer_name, learning_rate, output_dim):
+def get_googlenet_model(learning_rate, output_dim):
     """ Helper function
     """
     # Getting the model
@@ -137,20 +137,4 @@ def get_googlenet_model(optimizer_name, learning_rate, output_dim):
 
     model.load_state_dict(pretrained_model.state_dict())
 
-    params = [
-        {"params": model.prelayer.parameters(), "lr": learning_rate / 10},
-        {"params": model.a3.parameters(), "lr": learning_rate / 10},
-        {"params": model.b3.parameters(), "lr": learning_rate / 8},
-        {"params": model.a4.parameters(), "lr": learning_rate / 8},
-        {"params": model.b4.parameters(), "lr": learning_rate / 6},
-        {"params": model.c4.parameters(), "lr": learning_rate / 6},
-        {"params": model.d4.parameters(), "lr": learning_rate / 4},
-        {"params": model.e4.parameters(), "lr": learning_rate / 4},
-        {"params": model.a5.parameters(), "lr": learning_rate / 2},
-        {"params": model.b5.parameters(), "lr": learning_rate / 2},
-        {"params": model.fc.parameters()},
-    ]
-
-    if optimizer_name == "SGD":
-        optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
-    return model, optimizer
+    return model, model.parameters()
