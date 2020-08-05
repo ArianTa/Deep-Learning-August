@@ -340,6 +340,8 @@ if __name__ == "__main__":
         (model, params,) = get_densenet_model(args.model, args.lr, output_dim,)
     elif "shufflenet" in args.model:
         (model, params,) = get_shufflenet_model(args.model, args.lr, output_dim,)
+    elif "alexnet" in args.model:
+        (model, params) = get_alexnet_model(args.model, args.lr, output_dim,)
     # else blabla
 
     if args.optimizer == "Adam":

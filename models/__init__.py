@@ -4,3 +4,4 @@ from .vgg import *
 from .densenet import *
 from .googlenet import *
 from .shufflenetV2 import *
+from .alexnet import *
