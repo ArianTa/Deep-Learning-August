@@ -4,22 +4,19 @@
     https://arxiv.org/abs/1707.01083v2
 """
 
+import torch.nn.functional as F
 from functools import partial
 
 import torch
 import torch.nn as nn
 import torchvision.models as models
 
-  
+
 """shufflenetv2 in pytorch
 [1] Ningning Ma, Xiangyu Zhang, Hai-Tao Zheng, Jian Sun
     ShuffleNet V2: Practical Guidelines for Efficient CNN Architecture Design
     https://arxiv.org/abs/1807.11164
 """
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 
 def channel_shuffle(x, groups):
@@ -28,8 +25,7 @@ def channel_shuffle(x, groups):
     channels_per_group = num_channels // groups
 
     # reshape
-    x = x.view(batchsize, groups,
-               channels_per_group, height, width)
+    x = x.view(batchsize, groups, channels_per_group, height, width)
 
     x = torch.transpose(x, 1, 2).contiguous()
 
@@ -44,7 +40,7 @@ class InvertedResidual(nn.Module):
         super(InvertedResidual, self).__init__()
 
         if not (1 <= stride <= 3):
-            raise ValueError('illegal stride value')
+            raise ValueError("illegal stride value")
         self.stride = stride
 
         branch_features = oup // 2
@@ -52,9 +48,18 @@ class InvertedResidual(nn.Module):
 
         if self.stride > 1:
             self.branch1 = nn.Sequential(
-                self.depthwise_conv(inp, inp, kernel_size=3, stride=self.stride, padding=1),
+                self.depthwise_conv(
+                    inp, inp, kernel_size=3, stride=self.stride, padding=1
+                ),
                 nn.BatchNorm2d(inp),
-                nn.Conv2d(inp, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
+                nn.Conv2d(
+                    inp,
+                    branch_features,
+                    kernel_size=1,
+                    stride=1,
+                    padding=0,
+                    bias=False,
+                ),
                 nn.BatchNorm2d(branch_features),
                 nn.ReLU(inplace=True),
             )
@@ -62,20 +67,41 @@ class InvertedResidual(nn.Module):
             self.branch1 = nn.Sequential()
 
         self.branch2 = nn.Sequential(
-            nn.Conv2d(inp if (self.stride > 1) else branch_features,
-                      branch_features, kernel_size=1, stride=1, padding=0, bias=False),
+            nn.Conv2d(
+                inp if (self.stride > 1) else branch_features,
+                branch_features,
+                kernel_size=1,
+                stride=1,
+                padding=0,
+                bias=False,
+            ),
             nn.BatchNorm2d(branch_features),
             nn.ReLU(inplace=True),
-            self.depthwise_conv(branch_features, branch_features, kernel_size=3, stride=self.stride, padding=1),
+            self.depthwise_conv(
+                branch_features,
+                branch_features,
+                kernel_size=3,
+                stride=self.stride,
+                padding=1,
+            ),
             nn.BatchNorm2d(branch_features),
-            nn.Conv2d(branch_features, branch_features, kernel_size=1, stride=1, padding=0, bias=False),
+            nn.Conv2d(
+                branch_features,
+                branch_features,
+                kernel_size=1,
+                stride=1,
+                padding=0,
+                bias=False,
+            ),
             nn.BatchNorm2d(branch_features),
             nn.ReLU(inplace=True),
         )
 
     @staticmethod
     def depthwise_conv(i, o, kernel_size, stride=1, padding=0, bias=False):
-        return nn.Conv2d(i, o, kernel_size, stride, padding, bias=bias, groups=i)
+        return nn.Conv2d(
+            i, o, kernel_size, stride, padding, bias=bias, groups=i
+        )
 
     def forward(self, x):
         if self.stride == 1:
@@ -90,13 +116,23 @@ class InvertedResidual(nn.Module):
 
 
 class ShuffleNetV2(nn.Module):
-    def __init__(self, stages_repeats, stages_out_channels, num_classes=1000, inverted_residual=InvertedResidual):
+    def __init__(
+        self,
+        stages_repeats,
+        stages_out_channels,
+        num_classes=1000,
+        inverted_residual=InvertedResidual,
+    ):
         super(ShuffleNetV2, self).__init__()
 
         if len(stages_repeats) != 3:
-            raise ValueError('expected stages_repeats as list of 3 positive ints')
+            raise ValueError(
+                "expected stages_repeats as list of 3 positive ints"
+            )
         if len(stages_out_channels) != 5:
-            raise ValueError('expected stages_out_channels as list of 5 positive ints')
+            raise ValueError(
+                "expected stages_out_channels as list of 5 positive ints"
+            )
         self._stage_out_channels = stages_out_channels
 
         input_channels = 3
@@ -110,12 +146,15 @@ class ShuffleNetV2(nn.Module):
 
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
-        stage_names = ['stage{}'.format(i) for i in [2, 3, 4]]
+        stage_names = ["stage{}".format(i) for i in [2, 3, 4]]
         for name, repeats, output_channels in zip(
-                stage_names, stages_repeats, self._stage_out_channels[1:]):
+            stage_names, stages_repeats, self._stage_out_channels[1:]
+        ):
             seq = [inverted_residual(input_channels, output_channels, 2)]
             for i in range(repeats - 1):
-                seq.append(inverted_residual(output_channels, output_channels, 1))
+                seq.append(
+                    inverted_residual(output_channels, output_channels, 1)
+                )
             setattr(self, name, nn.Sequential(*seq))
             input_channels = output_channels
 
@@ -150,7 +189,9 @@ def _shufflenetv2(arch, pretrained, progress, *args, **kwargs):
     if pretrained:
         model_url = model_urls[arch]
         if model_url is None:
-            raise NotImplementedError('pretrained {} is not supported as of now'.format(arch))
+            raise NotImplementedError(
+                "pretrained {} is not supported as of now".format(arch)
+            )
         else:
             state_dict = load_state_dict_from_url(model_url, progress=progress)
             model.load_state_dict(state_dict)
@@ -168,8 +209,14 @@ def shufflenet_v2_x0_5(pretrained=False, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _shufflenetv2('shufflenetv2_x0.5', pretrained, progress,
-                         [4, 8, 4], [24, 48, 96, 192, 1024], **kwargs)
+    return _shufflenetv2(
+        "shufflenetv2_x0.5",
+        pretrained,
+        progress,
+        [4, 8, 4],
+        [24, 48, 96, 192, 1024],
+        **kwargs
+    )
 
 
 def shufflenet_v2_x1_0(pretrained=False, progress=True, **kwargs):
@@ -182,8 +229,14 @@ def shufflenet_v2_x1_0(pretrained=False, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _shufflenetv2('shufflenetv2_x1.0', pretrained, progress,
-                         [4, 8, 4], [24, 116, 232, 464, 1024], **kwargs)
+    return _shufflenetv2(
+        "shufflenetv2_x1.0",
+        pretrained,
+        progress,
+        [4, 8, 4],
+        [24, 116, 232, 464, 1024],
+        **kwargs
+    )
 
 
 def shufflenet_v2_x1_5(pretrained=False, progress=True, **kwargs):
@@ -196,8 +249,14 @@ def shufflenet_v2_x1_5(pretrained=False, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _shufflenetv2('shufflenetv2_x1.5', pretrained, progress,
-                         [4, 8, 4], [24, 176, 352, 704, 1024], **kwargs)
+    return _shufflenetv2(
+        "shufflenetv2_x1.5",
+        pretrained,
+        progress,
+        [4, 8, 4],
+        [24, 176, 352, 704, 1024],
+        **kwargs
+    )
 
 
 def shufflenet_v2_x2_0(pretrained=False, progress=True, **kwargs):
@@ -210,40 +269,44 @@ def shufflenet_v2_x2_0(pretrained=False, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _shufflenetv2('shufflenetv2_x2.0', pretrained, progress,
-                         [4, 8, 4], [24, 244, 488, 976, 2048], **kwargs)
+    return _shufflenetv2(
+        "shufflenetv2_x2.0",
+        pretrained,
+        progress,
+        [4, 8, 4],
+        [24, 244, 488, 976, 2048],
+        **kwargs
+    )
 
 
 def get_shufflenet_model(
-    model_name,
-    learning_rate, output_dim,
+    model_name, learning_rate, output_dim,
 ):
     """ Helper function
     """
     # Getting the model
-    if model_name == "shufflenet_v2_x0_5" :
-        model = shufflenet_v2_x0_5(num_classes = output_dim)
+    if model_name == "shufflenet_v2_x0_5":
+        model = shufflenet_v2_x0_5(num_classes=output_dim)
         pretrained_model = models.shufflenet_v2_x0_5(pretrained=True)
-    elif model_name == "shufflenet_v2_x1_0" :
-        model = shufflenet_v2_x1_0(num_classes = output_dim)
+    elif model_name == "shufflenet_v2_x1_0":
+        model = shufflenet_v2_x1_0(num_classes=output_dim)
         pretrained_model = models.shufflenet_v2_x1_0(pretrained=True)
-    elif model_name == "shufflenet_v2_x1_5" :
-        model = shufflenet_v2_x1_5(num_classes = output_dim)
+    elif model_name == "shufflenet_v2_x1_5":
+        model = shufflenet_v2_x1_5(num_classes=output_dim)
         pretrained_model = models.shufflenet_v2_x1_5(pretrained=True)
-    elif model_name == "shufflenet_v2_x2_0" :
-        model = shufflenet_v2_x2_0(num_classes = output_dim)
+    elif model_name == "shufflenet_v2_x2_0":
+        model = shufflenet_v2_x2_0(num_classes=output_dim)
         pretrained_model = models.shufflenet_v2_x2_0(pretrained=True)
-    else :
-        model = shufflenet_v2_x0_5(num_classes = output_dim)
+    else:
+        model = shufflenet_v2_x0_5(num_classes=output_dim)
         pretrained_model = models.shufflenet_v2_x0_5(pretrained=True)
 
-    
     IN_FEATURES = pretrained_model.fc.in_features
 
     fc = nn.Linear(IN_FEATURES, output_dim)
 
     pretrained_model.fc = fc
-    
+
     model.load_state_dict(pretrained_model.state_dict())
 
     return (

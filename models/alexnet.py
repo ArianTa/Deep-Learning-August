@@ -4,8 +4,8 @@ import torchvision.models as models
 from collections import namedtuple
 import torch.optim as optim
 
-class AlexNet(nn.Module):
 
+class AlexNet(nn.Module):
     def __init__(self, num_classes=1000):
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
@@ -42,7 +42,6 @@ class AlexNet(nn.Module):
         return x, h
 
 
-
 def get_alexnet_model(model_name, learning_rate, output_dim):
     """ Helper function
     """
@@ -57,6 +56,5 @@ def get_alexnet_model(model_name, learning_rate, output_dim):
     pretrained_model.classifier[-1] = fc
 
     model.load_state_dict(pretrained_model.state_dict())
-
 
     return model, model.parameters()

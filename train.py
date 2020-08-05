@@ -177,7 +177,7 @@ def main(**kwargs,):
     n_valid_examples = len(train_data) - n_train_examples
 
     (train_data, valid_data,) = data.random_split(
-        train_data, [n_train_examples, n_valid_examples,],
+        train_data, [n_train_examples, n_valid_examples, ],
     )
 
     valid_data = copy.deepcopy(valid_data)
@@ -230,12 +230,10 @@ def main(**kwargs,):
         print(f"Epoch: {epoch+1:02} | Epoch Time: {epoch_mins}m {epoch_secs}s")
         print(
             f"\tTrain Loss: {train_loss:.3f} | Train Acc @1: {train_acc_1*100:6.2f}% | "
-            f"Train Acc @5: {train_acc_5*100:6.2f}%"
-        )
+            f"Train Acc @5: {train_acc_5*100:6.2f}%")
         print(
             f"\tValid Loss: {valid_loss:.3f} | Valid Acc @1: {valid_acc_1*100:6.2f}% | "
-            f"Valid Acc @5: {valid_acc_5*100:6.2f}%"
-        )
+            f"Valid Acc @5: {valid_acc_5*100:6.2f}%")
 
 
 if __name__ == "__main__":
@@ -339,7 +337,9 @@ if __name__ == "__main__":
     elif "densenet" in args.model:
         (model, params,) = get_densenet_model(args.model, args.lr, output_dim,)
     elif "shufflenet" in args.model:
-        (model, params,) = get_shufflenet_model(args.model, args.lr, output_dim,)
+        (model, params,) = get_shufflenet_model(
+            args.model, args.lr, output_dim,
+        )
     elif "alexnet" in args.model:
         (model, params) = get_alexnet_model(args.model, args.lr, output_dim,)
     # else blabla

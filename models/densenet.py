@@ -46,7 +46,7 @@ class Bottleneck(nn.Module):
     def forward(
         self, x,
     ):
-        return torch.cat([x, self.bottle_neck(x),], 1,)
+        return torch.cat([x, self.bottle_neck(x), ], 1,)
 
 
 # """We refer to layers between blocks as transition
@@ -171,7 +171,7 @@ def get_densenet_model(
     if model_name == "densenet121":
         model = DenseNet(
             Bottleneck,
-            [6, 12, 24, 16,],
+            [6, 12, 24, 16, ],
             growth_rate=32,
             output_dim=output_dim,
         )
@@ -179,7 +179,7 @@ def get_densenet_model(
     elif model_name == "densenet169":
         model = DenseNet(
             Bottleneck,
-            [6, 12, 32, 32,],
+            [6, 12, 32, 32, ],
             growth_rate=32,
             output_dim=output_dim,
         )
@@ -187,7 +187,7 @@ def get_densenet_model(
     elif model_name == "densenet201":
         model = DenseNet(
             Bottleneck,
-            [6, 12, 48, 32,],
+            [6, 12, 48, 32, ],
             growth_rate=32,
             output_dim=output_dim,
         )
@@ -195,7 +195,7 @@ def get_densenet_model(
     elif model_name == "densenet161":
         model = DenseNet(
             Bottleneck,
-            [6, 12, 36, 24,],
+            [6, 12, 36, 24, ],
             growth_rate=48,
             output_dim=output_dim,
         )
@@ -203,7 +203,7 @@ def get_densenet_model(
     else:
         model = DenseNet(
             Bottleneck,
-            [6, 12, 36, 24,],
+            [6, 12, 36, 24, ],
             growth_rate=48,
             output_dim=output_dim,
         )

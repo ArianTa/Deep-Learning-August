@@ -4,7 +4,7 @@ import torchvision.models as models
 from collections import namedtuple
 import torch.optim as optim
 
-ResNetConfig = namedtuple("ResNetConfig", ["block", "n_blocks", "channels",],)
+ResNetConfig = namedtuple("ResNetConfig", ["block", "n_blocks", "channels", ],)
 
 
 class ResNet(nn.Module):
@@ -241,43 +241,43 @@ def get_resnet_model(
     if model_name == "resnet18":
         resnet_config = ResNetConfig(
             block=BasicBlock,
-            n_blocks=[2, 2, 2, 2,],
-            channels=[64, 128, 256, 512,],
+            n_blocks=[2, 2, 2, 2, ],
+            channels=[64, 128, 256, 512, ],
         )
         pretrained_model = models.resnet18(pretrained=True)
     elif model_name == "resnet34":
         resnet_config = ResNetConfig(
             block=BasicBlock,
-            n_blocks=[3, 4, 6, 3,],
-            channels=[64, 128, 256, 512,],
+            n_blocks=[3, 4, 6, 3, ],
+            channels=[64, 128, 256, 512, ],
         )
         pretrained_model = models.resnet34(pretrained=True)
     elif model_name == "resnet50":
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 4, 6, 3,],
-            channels=[64, 128, 256, 512,],
+            n_blocks=[3, 4, 6, 3, ],
+            channels=[64, 128, 256, 512, ],
         )
         pretrained_model = models.resnet50(pretrained=True)
     elif model_name == "resnet101":
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 4, 23, 3,],
-            channels=[64, 128, 256, 512,],
+            n_blocks=[3, 4, 23, 3, ],
+            channels=[64, 128, 256, 512, ],
         )
         pretrained_model = models.resnet101(pretrained=True)
     elif model_name == "resnet152":
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 8, 36, 3,],
-            channels=[64, 128, 256, 512,],
+            n_blocks=[3, 8, 36, 3, ],
+            channels=[64, 128, 256, 512, ],
         )
         pretrained_model = models.resnet152(pretrained=True)
     else:
         resnet_config = ResNetConfig(
             block=Bottleneck,
-            n_blocks=[3, 8, 36, 3,],
-            channels=[64, 128, 256, 512,],
+            n_blocks=[3, 8, 36, 3, ],
+            channels=[64, 128, 256, 512, ],
         )
         pretrained_model = models.resnet152(pretrained=True)
 
@@ -291,12 +291,12 @@ def get_resnet_model(
     model.load_state_dict(pretrained_model.state_dict())
 
     params = [
-        {"params": model.conv1.parameters(), "lr": learning_rate / 10,},
-        {"params": model.bn1.parameters(), "lr": learning_rate / 10,},
-        {"params": model.layer1.parameters(), "lr": learning_rate / 8,},
-        {"params": model.layer2.parameters(), "lr": learning_rate / 6,},
-        {"params": model.layer3.parameters(), "lr": learning_rate / 4,},
-        {"params": model.layer4.parameters(), "lr": learning_rate / 2,},
+        {"params": model.conv1.parameters(), "lr": learning_rate / 10, },
+        {"params": model.bn1.parameters(), "lr": learning_rate / 10, },
+        {"params": model.layer1.parameters(), "lr": learning_rate / 8, },
+        {"params": model.layer2.parameters(), "lr": learning_rate / 6, },
+        {"params": model.layer3.parameters(), "lr": learning_rate / 4, },
+        {"params": model.layer4.parameters(), "lr": learning_rate / 2, },
         {"params": model.fc.parameters()},
     ]
     return (
