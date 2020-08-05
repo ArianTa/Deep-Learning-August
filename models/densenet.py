@@ -133,7 +133,7 @@ def get_densenet_model(model_name, learning_rate, output_dim):
         model=DenseNet(Bottleneck, [6,12,36,24], growth_rate=48)
         pretrained_model = models.densenet161(pretrained=True)
 
-    IN_FEATURES = pretrained_model.fc.in_features
+    IN_FEATURES = pretrained_model.classifier.in_features
 
     fc = nn.Linear(IN_FEATURES, output_dim)
 
