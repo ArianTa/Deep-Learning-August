@@ -342,6 +342,9 @@ if __name__ == "__main__":
         )
     elif "alexnet" in args.model:
         (model, params) = get_alexnet_model(args.model, args.lr, output_dim,)
+    else:
+        print("Model does not exist")
+        exit(1)
     # else blabla
 
     if args.optimizer == "Adam":
