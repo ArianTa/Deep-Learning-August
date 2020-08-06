@@ -359,7 +359,7 @@ if __name__ == "__main__":
         (model, params,) = get_googlenet_model(args.lr, output_dim,)
     elif "densenet" in args.model:
         (model, params,) = get_densenet_model(args.model, args.lr, output_dim,)
-    elif "shufflenetV2" in args.model:
+    elif "shufflenet" in args.model:
         (model, params,) = get_shufflenet_model(
             args.model, args.lr, output_dim,
         )

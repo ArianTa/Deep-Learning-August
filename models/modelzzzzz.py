@@ -43,10 +43,10 @@ def get_all_model(
         model.classifier[-1] = fc
         
     else:
-        model = models.inception_v3(pretrained=True)
-        IN_FEATURES = model.fc.in_features
+        model = models.mobilenet_v2(pretrained=True)
+        IN_FEATURES = model.classifier[-1].in_features
         fc = nn.Linear(IN_FEATURES, output_dim,)
-        model.fc = fc
+        model.classifier[-1] = fc
 
     return (
         model,
