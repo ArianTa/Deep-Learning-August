@@ -183,7 +183,15 @@ def main(**kwargs,):
     # Creating dataset, splitting train/validation set and creating dataloaders
     train_data = dataset(root=data_dir, transform=train_transforms,)
     classes = [utils.format_label(c) for c in train_data.classes]
-
+    ''' TO GET THE NUMBER OF CLASSES ETC
+    unique_classes = set(classes)
+    number_of_unique_values = len(unique_classes)
+    max_element = max(classes,key=classes.count)
+    nb_max = classes.count(max_element)
+    print('number of superclasses: ', number_of_unique_values)
+    print('max occurence of subclasses: ', nb_max)
+    exit(0)
+    '''
     n_train_examples = int(len(train_data) * valid_ratio)
     n_valid_examples = len(train_data) - n_train_examples
 
