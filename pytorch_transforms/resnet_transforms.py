@@ -21,9 +21,10 @@ stds = [0.229, 0.224, 0.225]
 train_transforms = transforms.Compose(
     [
         transforms.Resize(size),
-        transforms.RandomRotation(5),
+        transforms.RandomRotation(30),
         transforms.RandomHorizontalFlip(0.5),
-        transforms.RandomCrop(size, padding=10,),
+        transforms.RandomVerticalFlip(0.5),
+        transforms.RandomCrop(size, padding=20,),
         transforms.ToTensor(),
         transforms.Normalize(mean=means, std=stds,),
     ]

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
-
+import utils
+import numpy as np
 
 def show_img(
     dataset, n_images=25,
