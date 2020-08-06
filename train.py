@@ -70,10 +70,10 @@ def train(
 
         optimizer.zero_grad()
         
-        if UNPACK:
-            (y_pred, _,) = model(x)
-        else:
-            y_pred = model(x)
+        y_pred = model(x)
+
+        if isinstance(y_pred, tuple):
+            y_pred, _ = y_pred
 
         loss = criterion(y_pred, y,)
 
@@ -123,10 +123,10 @@ def evaluate(
             x = x.to(device)
             y = y.to(device)
 
-            if UNPACK:
-                (y_pred, _,) = model(x)
-            else:
-                y_pred = model(x)
+            y_pred = model(x)
+
+            if isinstance(y_pred, tuple):
+                y_pred, _ = y_pred
 
             loss = criterion(y_pred, y,)
 
@@ -332,17 +332,11 @@ if __name__ == "__main__":
         default=10,
         help="The highest learning rate considered if --flind_lr is set"
     )
-    parser.add_argument(
-        "--no_unpack",
-        action="store_true",
-        help="Do not unpack model output - for unmodified models",
-    )
 
     # Add more stuff here maybe ?
     args = parser.parse_args()
 
     globals()["DEBUG"] = True if args.debug else False
-    globals()["UNPACK"] = False if args.no_unpack else True
 
     # For reproducability
     SEED = args.seed
