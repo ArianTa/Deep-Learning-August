@@ -37,5 +37,5 @@ class dummy_context_mgr:
 
 
 def format_label(label,):
-    #label = label.split("_")[1]  # takes only the superclass
+    # label = label.split("_")[1]  # takes only the superclass
     return label

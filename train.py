@@ -118,7 +118,7 @@ def evaluate(
 
             loss = criterion(y_pred, y,)
 
-            (acc_1, acc_5,) = calculate_topk_accuracy(y_pred, y,)
+            (acc_1, acc_5,) = utils.calculate_topk_accuracy(y_pred, y,)
 
             epoch_loss += loss.item()
             epoch_acc_1 += acc_1.item()
@@ -148,11 +148,10 @@ def epoch_time(
 
 
 def find_learning_rate(
-    star_lr, end_lr, nb_iter, iterator,
+    star_lr, end_lr, iterator, optimizer, nb_iter = 100
 ):
-    optimizer_lr = optim.Adam(model.parameters(), lr=star_lr,)
-    lr_finder = LRFinder(model, optimizer_lr, criterion, device,)
-    (lrs, losses,) = lr_finder.range_test(iterator, end_lr, nb_iter,)
+    lr_finder = LRFinder(model, optimizer, criterion, device,)
+    (lrs, losses,) = lr_finder.range_test(iterator, end_lr,)
     plot_lr_finder(
         lrs, losses, skip_start=30, skip_end=30,
     )
@@ -192,7 +191,7 @@ def main(**kwargs,):
     # Find learning rate instead of training
     if find_lr:
         find_learning_rate(
-            star_lr=1e-7, end_lr=10, nb_iter=100, iterator=train_iterator,
+            star_lr=1e-7, end_lr=end_lr, iterator=train_iterator, optimizer = optimizer
         )
         exit(0)
 
@@ -264,11 +263,6 @@ if __name__ == "__main__":
         help="Name of the saved weights",
     )
     parser.add_argument(
-        "--find_lr",
-        action="store_true",
-        help="Find the starting learning rate",
-    )
-    parser.add_argument(
         "--lr", type=float, default=10e-3, help="Sarting learning rate",
     )
     parser.add_argument(
@@ -306,6 +300,17 @@ if __name__ == "__main__":
         type=str,
         default=None,
         help="Specify a path for existing weights",
+    )
+    parser.add_argument(
+        "--find_lr",
+        action="store_true",
+        help="Find the starting learning rate, if set, --lr becomes the lowest learning rate considered",
+    )
+    parser.add_argument(
+        "--end_lr",
+        type=float,
+        default=10,
+        help="The highest learning rate considered if --flind_lr is set"
     )
 
     # Add more stuff here maybe ?
@@ -381,5 +386,6 @@ if __name__ == "__main__":
         dataloader=data.DataLoader,
         valid_ratio=args.valid_ratio,
         file_name=args.save,
-        find_lr=True if args.find_lr == "y" else False,
+        find_lr=True if args.find_lr else False,
+        end_lr = args.end_lr
     )

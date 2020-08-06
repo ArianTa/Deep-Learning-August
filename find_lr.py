@@ -34,7 +34,6 @@ class LRFinder:
         iterator = IteratorWrapper(iterator)
 
         for iteration in range(num_iter):
-            print(iteration)
             loss = self._train_batch(iterator)
 
             # update lr
