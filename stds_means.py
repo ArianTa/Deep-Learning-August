@@ -1,7 +1,7 @@
 import torch
 import torchvision.transforms as transforms
 import argparse
-
+import torchvision.datasets as datasets
 
 def stds_means(data_dir,):
     train_data = datasets.ImageFolder(

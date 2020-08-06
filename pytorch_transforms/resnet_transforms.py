@@ -1,6 +1,7 @@
 import torchvision.transforms as transforms
 
-size = 224
+
+"""
 means = [
     0.4459,
     0.4182,
@@ -11,7 +12,11 @@ stds = [
     0.2137,
     0.2109,
 ]
+"""
 
+size = 224
+means = [0.485, 0.456, 0.406]
+stds = [0.229, 0.224, 0.225]
 
 train_transforms = transforms.Compose(
     [

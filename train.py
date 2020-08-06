@@ -47,7 +47,7 @@ import utils
 
 
 def train(
-    model, iterator, optimizer, criterion, scheduler, device,
+    model, iterator, optimizer, criterion, scheduler, device
 ):
 
     epoch_loss = 0
@@ -63,18 +63,27 @@ def train(
     for (x, y,) in iterator:
         if DEBUG:
             i += 1
-            print(f"{i}th iteration, total is {total}")
+            print(f"{i}th batch: total is {total}")
 
         x = x.to(device)
         y = y.to(device)
 
         optimizer.zero_grad()
-
-        (y_pred, _,) = model(x)
+        
+        if UNPACK:
+            (y_pred, _,) = model(x)
+        else:
+            y_pred = model(x)
 
         loss = criterion(y_pred, y,)
 
+        if DEBUG:
+            print(f"{i}th batch loss: {loss.item()}")
+
         (acc_1, acc_5,) = utils.calculate_topk_accuracy(y_pred, y,)
+
+        if DEBUG:
+            print(f"{i}th batch train accuracies: top1: {acc_1.item()*100:6.2f} | top5: {acc_5.item()*100:6.2f}")
 
         loss.backward()
 
@@ -114,7 +123,10 @@ def evaluate(
             x = x.to(device)
             y = y.to(device)
 
-            (y_pred, _,) = model(x)
+            if UNPACK:
+                (y_pred, _,) = model(x)
+            else:
+                y_pred = model(x)
 
             loss = criterion(y_pred, y,)
 
@@ -312,11 +324,17 @@ if __name__ == "__main__":
         default=10,
         help="The highest learning rate considered if --flind_lr is set"
     )
+    parser.add_argument(
+        "--no_unpack",
+        action="store_true",
+        help="Do not unpack model output - for unmodified models",
+    )
 
     # Add more stuff here maybe ?
     args = parser.parse_args()
 
     globals()["DEBUG"] = True if args.debug else False
+    globals()["UNPACK"] = False if args.no_unpack else True
 
     # For reproducability
     SEED = args.seed
@@ -341,15 +359,14 @@ if __name__ == "__main__":
         (model, params,) = get_googlenet_model(args.lr, output_dim,)
     elif "densenet" in args.model:
         (model, params,) = get_densenet_model(args.model, args.lr, output_dim,)
-    elif "shufflenet" in args.model:
+    elif "shufflenetV2" in args.model:
         (model, params,) = get_shufflenet_model(
             args.model, args.lr, output_dim,
         )
     elif "alexnet" in args.model:
         (model, params) = get_alexnet_model(args.model, args.lr, output_dim,)
     else:
-        print("Model does not exist")
-        exit(1)
+        (model, params) = get_all_model(args.model, args.lr, output_dim)
     # else blabla
 
     if args.optimizer == "Adam":
