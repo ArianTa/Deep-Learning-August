@@ -47,6 +47,8 @@ import utils
 
 from utils import plot_image
 
+from utils import *
+
 
 def train(
     model, iterator, optimizer, criterion, scheduler, device
@@ -185,7 +187,12 @@ def main(**kwargs,):
     # Creating dataset, splitting train/validation set and creating dataloaders
     train_data = dataset(root=data_dir, transform=train_transforms,)
     classes = [utils.format_label(c) for c in train_data.classes]
+    
     '''
+    #Measure the balance of the dataset:
+    print('balance ratio = ', balance(train_data))
+    exit(0)
+    
     #Show the images transformed
     plot_image.show_img(train_data)
     exit(0)
