@@ -45,11 +45,6 @@ from models import *
 
 import utils
 
-from utils import plot_image
-
-from utils import *
-
-
 def train(
     model, iterator, optimizer, criterion, scheduler, device
 ):
@@ -187,17 +182,8 @@ def main(**kwargs,):
     # Creating dataset, splitting train/validation set and creating dataloaders
     train_data = dataset(root=data_dir, transform=train_transforms,)
     classes = [utils.format_label(c) for c in train_data.classes]
-    
-    '''
-    #Measure the balance of the dataset:
-    print('balance ratio = ', balance(train_data))
-    exit(0)
-    
-    #Show the images transformed
-    plot_image.show_img(train_data)
-    exit(0)
-    '''
-    '''
+
+    """
     #TO GET THE NUMBER OF CLASSES ETC
     unique_classes = set(classes)
     number_of_unique_values = len(unique_classes)
@@ -206,7 +192,9 @@ def main(**kwargs,):
     print('number of superclasses: ', number_of_unique_values)
     print('max occurence of subclasses: ', nb_max)
     exit(0)
-    '''
+    """
+
+
     n_train_examples = int(len(train_data) * valid_ratio)
     n_valid_examples = len(train_data) - n_train_examples
 
