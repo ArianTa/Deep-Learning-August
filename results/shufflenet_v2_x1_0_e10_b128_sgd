@@ -1,7 +1,0 @@
-The model has 2,675,279 trainable parameters
-1th batch: total is 502
-1th batch loss: 7.237957954406738
-1th batch train accuracies: top1:   0.00 | top5:   0.00
-2th batch: total is 502
-2th batch loss: 7.233211994171143
-2th batch train accuracies: top1:   0.78 | top5:   0.78
