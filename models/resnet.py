@@ -289,7 +289,7 @@ def get_resnet_model(
 
     model = ResNet(resnet_config, output_dim,)
     model.load_state_dict(pretrained_model.state_dict())
-    """
+
     params = [
         {"params": model.conv1.parameters(), "lr": learning_rate / 10, },
         {"params": model.bn1.parameters(), "lr": learning_rate / 10, },
@@ -299,8 +299,8 @@ def get_resnet_model(
         {"params": model.layer4.parameters(), "lr": learning_rate / 2, },
         {"params": model.fc.parameters()},
     ]
-    """
+
     return (
         model,
-        model.parameters(),
+        params,
     )
