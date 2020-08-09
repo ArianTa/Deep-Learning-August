@@ -147,9 +147,9 @@ if __name__ == "__main__":
 
     # Load the weight into the model
     if args.weights:
-        with utils.measure_time(
+        with measure_time(
             "Loading weights"
-        ) if args.debug else utils.dummy_context_mgr():
+        ) if args.debug else dummy_context_mgr():
             model.load_state_dict(torch.load(args.weights))
 
     meta_data = {
