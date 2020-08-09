@@ -51,14 +51,14 @@ def plot_confusion_matrix(labels, pred_labels, classes):
     
     fig = plt.figure(figsize = (250, 250))
     ax = fig.add_subplot(1, 1, 1)
-    cm = confusion_matrix(labels, pred_labels)
+    cm = confusion_matrix(labels, pred_labels, normalize = 'true')
     cm = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels = classes)
     cm.plot(include_values = False, cmap = 'Blues', ax = ax)
     fig.delaxes(fig.axes[1]) #delete colorbar
     plt.xticks(rotation = 90)
     plt.xlabel('Predicted Label', fontsize = 50)
     plt.ylabel('True Label', fontsize = 50)
-    plt.savefig('kek2.png', dpi=100)
+    plt.savefig('kek4.png', dpi=100)
 
 def plot_most_incorrect(incorrect, classes, n_images, normalize = True):
 

@@ -233,7 +233,7 @@ class BasicBlock(nn.Module):
 
 
 def get_resnet_model(
-    model_name, learning_rate, output_dim,
+    model_name, learning_rate, output_dim, device
 ):
     """ Helper function
     """

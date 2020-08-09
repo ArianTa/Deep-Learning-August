@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
 import torch.utils.data as data
-import torchvision.datasets as datasets
 from torch.utils.data import (
     Dataset,
     DataLoader,
@@ -24,16 +23,22 @@ from models import get_model
 from train import train
 from test import test
 from find_lr import find_learning_rate
-
+from pytorch_datasets import MushroomDataset
 
 if __name__ == "__main__":
     # Parsing arguments and setting up metadata
     parser = argparse.ArgumentParser(description="Train a model")
     parser.add_argument(
-        "--path",
+        "--data_path",
         type=str,
-        default="data/train",
+        default="data",
         help="Path to root directory of the dataset",
+    )
+    parser.add_argument(
+        "--json_path",
+        type=str,
+        default="data/train.json",
+        help="Path to JSON annotation file",
     )
     parser.add_argument(
         "--mode",
@@ -64,7 +69,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--valid_ratio",
         type=float,
-        default=0.9,
+        default=0.90,
         help="Ratio between the train set and validation set",
     )
     parser.add_argument(
@@ -111,6 +116,9 @@ if __name__ == "__main__":
     torch.cuda.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True
 
+    # device
+    args.device = torch.device("cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
+
     # criterion
     criterion = nn.CrossEntropyLoss()
 
@@ -126,15 +134,13 @@ if __name__ == "__main__":
     if args.weights:
         with utils.measure_time(
             "Loading weights"
-        ) if DEBUG else utils.dummy_context_mgr():
+        ) if args.debug else utils.dummy_context_mgr():
             model.load_state_dict(torch.load(args.weights))
 
 
     meta_data = {
         "DEBUG": True if args.debug else False,
-        "device": torch.device(
-            "cuda:0" if torch.cuda.is_available() and args.gpu else "cpu"
-        ),
+        "device": args.device,
         "model": model,
         "optimizer": optimizer,
         "criterion": criterion
@@ -149,10 +155,11 @@ if __name__ == "__main__":
             "pytorch_transforms." + args.transforms + ".test_transforms"
         )
 
+    dataset = MushroomDataset(root=args.data_path, annotation=args.json_path, transform=None)
 
     if args.mode == "train":
-        # Creating dataset, splitting train/validation set and creating dataloaders
-        train_data = datasets.ImageFolder(root=args.path, transform=train_transforms,)
+        train_data = dataset
+        train_data.transform = train_transforms
 
         n_train_examples = int(len(train_data) * args.valid_ratio)
         n_valid_examples = len(train_data) - n_train_examples
@@ -173,23 +180,28 @@ if __name__ == "__main__":
         meta_data.update({
             "epochs": args.epochs,
             "train_iterator": train_iterator,
-            "valid_iterator": valid_iterator
+            "valid_iterator": valid_iterator,
+            "file_name": args.save
         })
 
 
         train(**meta_data)
 
     elif args.mode == "test":
-        test_data = datasets.ImageFolder(root=args.path, transform=test_transforms)
+        test_data = dataset
+        test_data.transform = test_transforms
 
-
-        meta_data["test_iterator"] = data.DataLoader(
-            test_data, shuffle=True, batch_size=args.batch,
-        )
+        meta_data.update({
+            "classes": [utils.format_label(c) for c in test_data.classes],
+            "test_iterator": data.DataLoader(
+                test_data, shuffle=True, batch_size=args.batch,
+            )
+        })
         test(**meta_data)
 
     elif args.mode == "find_lr":
-        train_data = datasets.ImageFolder(root=args.path, transform=train_transforms,)
+        test_data = dataset
+        test_data.transform = test_transforms
 
         meta_data.update({
             "end_lr": args.end_lr,

@@ -70,7 +70,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--train_ratio",
-        default=0.8,
+        type=float,
+        default=0.9,
         help="Train ratio - (dataset size / train set size)",
     )
 
