@@ -1,5 +1,6 @@
 import os
 import torch
+import torch.nn as nn
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -180,6 +181,18 @@ def get_params(net, lr):
     """
     decay = []
     no_decay = []
-
+    i = 0
     for m in net.modules():
-        print("aa")
+        if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+            decay.append(m.weight)
+
+            if m.bias is not None:
+                no_decay.append(m.bias)
+        
+        else: 
+            if hasattr(m, 'weight'):
+                no_decay.append(m.weight)
+            if hasattr(m, 'bias'):
+                no_decay.append(m.bias)
+
+    assert len(list(net.parameters())) == len(decay) + len(no_decay)
