@@ -111,6 +111,7 @@ if __name__ == "__main__":
         help="Log file path for tensorboard"
     )
 
+
     # Add more stuff here maybe ?
     args = parser.parse_args()
 
@@ -207,7 +208,7 @@ if __name__ == "__main__":
         test_data.transform = test_transforms
 
         meta_data.update({
-            "classes": [utils.format_label(c) for c in test_data.classes],
+            "classes": test_data.classes,
             "test_iterator": data.DataLoader(
                 test_data, shuffle=True, batch_size=args.batch,
             )
@@ -220,10 +221,10 @@ if __name__ == "__main__":
 
         meta_data.update({
             "end_lr": args.end_lr,
-            "classes": [utils.format_label(c) for c in train_data.classes],
+            "classes": train_data.classes,
             "iterator": data.DataLoader(
                 train_data, shuffle=True, batch_size=args.batch,
             )
         })
-
+        
         find_learning_rate(**meta_data)
