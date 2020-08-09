@@ -6,7 +6,7 @@ import torch.optim as optim
 
 
 def get_all_model(
-    model_name, learning_rate, output_dim,
+    model_name, output_dim,
 ):
     """ Helper function
     """
@@ -48,7 +48,4 @@ def get_all_model(
         fc = nn.Linear(IN_FEATURES, output_dim,)
         model.classifier[-1] = fc
 
-    return (
-        model,
-        model.parameters(),
-    )
+    return model

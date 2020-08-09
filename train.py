@@ -9,7 +9,7 @@ from torch.optim.lr_scheduler import _LRScheduler
 
 from find_lr import count_parameters
 
-from utils import calculate_topk_accuracy
+from utils import *
 
 def train_epoch(
     model, iterator, optimizer, criterion, scheduler, device
@@ -126,8 +126,6 @@ def epoch_time(
 
 def train(**kwargs):
     globals().update(kwargs)
-    model.to(device)
-    criterion.to(device)
 
     if DEBUG:
         print(

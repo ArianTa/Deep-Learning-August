@@ -293,7 +293,7 @@ class BasicConv2d(nn.Module):
 
 
 def get_googlenet_model(
-    learning_rate, output_dim,
+    output_dim,
 ):
     """ Helper function
     """
@@ -316,7 +316,4 @@ def get_googlenet_model(
 
     model.load_state_dict(pretrained_model.state_dict())
 
-    return (
-        model,
-        model.parameters(),
-    )
+    return model

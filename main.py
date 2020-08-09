@@ -17,13 +17,14 @@ from pydoc import locate
 
 from tensorboardX import SummaryWriter
 
-import utils
 
-from models import get_model
+
 from train import train
 from test import test
 from find_lr import find_learning_rate
 from pytorch_datasets import MushroomDataset
+
+from utils import *
 
 if __name__ == "__main__":
     # Parsing arguments and setting up metadata
@@ -108,7 +109,7 @@ if __name__ == "__main__":
         "--log",
         type=str,
         default="results",
-        help="Log file path for tensorboardX"
+        help="Log file path for tensorboard"
     )
 
     # Add more stuff here maybe ?
@@ -123,13 +124,31 @@ if __name__ == "__main__":
     torch.backends.cudnn.deterministic = True
 
     # device
-    args.device = torch.device("cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
 
     # criterion
     criterion = nn.CrossEntropyLoss()
+    criterion.to(device)
 
     # Get the model and is parameters that are to be optimized
-    model, params = get_model(args)
+    model = get_model(args)
+    model.to(device)
+
+
+    if args.model == "resnet152": 
+        params = get_params(model, args.lr)
+
+        [
+            {"params": model.conv1.parameters(), "lr": args.lr / 10, },
+            {"params": model.bn1.parameters(), "lr": args.lr / 10, },
+            {"params": model.layer1.parameters(), "lr": args.lr / 8, },
+            {"params": model.layer2.parameters(), "lr": args.lr / 6, },
+            {"params": model.layer3.parameters(), "lr": args.lr / 4, },
+            {"params": model.layer4.parameters(), "lr": args.lr / 2, },
+            {"params": model.fc.parameters()},
+        ]
+    else:
+        params = model.parameters()
 
     # Optimizer
     optimizer = optim.SGD(
@@ -146,7 +165,7 @@ if __name__ == "__main__":
 
     meta_data = {
         "DEBUG": True if args.debug else False,
-        "device": args.device,
+        "device": device,
         "model": model,
         "optimizer": optimizer,
         "criterion": criterion

@@ -42,7 +42,7 @@ class AlexNet(nn.Module):
         return x, h
 
 
-def get_alexnet_model(model_name, learning_rate, output_dim):
+def get_alexnet_model(model_name, output_dim):
     """ Helper function
     """
     # Getting the model
@@ -57,4 +57,4 @@ def get_alexnet_model(model_name, learning_rate, output_dim):
 
     model.load_state_dict(pretrained_model.state_dict())
 
-    return model, model.parameters()
+    return model

@@ -11,7 +11,7 @@ from sklearn.metrics import ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 import numpy as np
 
-import utils
+from utils import *
 
 
 def get_predictions(model, iterator):
@@ -210,23 +210,21 @@ def plot_filters(filters, normalize = True):
 
 def test(**kwargs):
     globals().update(kwargs)
-    model.to(device)
-    criterion.to(device)
 
-    with utils.measure_time("Getting predictions"):
+    with measure_time("Getting predictions"):
         labels, probs = get_predictions(model, test_iterator)
 
-    with utils.measure_time("Torch argmax"):
+    with measure_time("Torch argmax"):
         pred_labels = torch.argmax(probs, 1)
 
-    with utils.measure_time("Confusion matrix"):
+    with measure_time("Confusion matrix"):
         plot_confusion_matrix(labels, pred_labels, classes)
 
-    with utils.measure_time("Torch eq"):
+    with measure_time("Torch eq"):
         corrects = torch.eq(labels, pred_labels)
     """
     incorrect_examples = []
-    with utils.measure_time("Getting most incorrect predictions"):
+    with measure_time("Getting most incorrect predictions"):
         for image, label, prob, correct in zip(images, labels, probs, corrects):
             if not correct:
                 incorrect_examples.append((image, label, prob))
