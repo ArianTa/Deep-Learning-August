@@ -14,38 +14,38 @@ import numpy as np
 from utils import *
 
 
+
+
 def get_predictions(model, iterator):
 
     model.eval()
 
+    images = []
     labels = []
     probs = []
 
     with torch.no_grad():
-        if DEBUG:
-            i = 0
-            print(f"Total number of iteration = {len(iterator)}")
 
         for (x, y) in iterator:
-
-            if DEBUG:
-                i += 1
-                print(f"{i}th iteration")
 
             x = x.to(device)
 
             y_pred, _ = model(x)
 
-            y_prob = F.softmax(y_pred, dim=-1)
-            top_pred = y_prob.argmax(1, keepdim=True)
+            y_prob = F.softmax(y_pred, dim = -1)
+            top_pred = y_prob.argmax(1, keepdim = True)
 
-            labels.append(y.to('cpu'))
-            probs.append(y_prob.to('cpu'))
+            images.append(x.cpu())
+            labels.append(y.cpu())
+            probs.append(y_prob.cpu())
 
-    labels = torch.cat(labels, dim=0)
-    probs = torch.cat(probs, dim=0)
+    images = torch.cat(images, dim = 0)
+    labels = torch.cat(labels, dim = 0)
+    probs = torch.cat(probs, dim = 0)
 
-    return labels, probs
+    return images, labels, probs
+
+
 
 
 def plot_confusion_matrix(labels, pred_labels, classes):
@@ -217,17 +217,15 @@ def test(**kwargs):
     globals().update(kwargs)
 
     with measure_time("Getting predictions"):
-        labels, probs = get_predictions(model, test_iterator)
+        images, labels, probs = get_predictions(model, test_iterator)
 
-    with measure_time("Torch argmax"):
-        pred_labels = torch.argmax(probs, 1)
+    pred_labels = torch.argmax(probs, 1)
 
     with measure_time("Confusion matrix"):
         plot_confusion_matrix(labels, pred_labels, classes)
 
-    with measure_time("Torch eq"):
-        corrects = torch.eq(labels, pred_labels)
-    """
+    corrects = torch.eq(labels, pred_labels)
+
     incorrect_examples = []
     with measure_time("Getting most incorrect predictions"):
         for image, label, prob, correct in zip(images, labels, probs, corrects):
@@ -254,4 +252,4 @@ def test(**kwargs):
     plot_filtered_images(images, filters, N_FILTERS)
 
     plot_filters(filters)
-    """
+

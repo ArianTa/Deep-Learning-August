@@ -33,6 +33,22 @@ class MushroomDataset(Dataset):
         with open(annotation) as json_file:
             self.annotation = json.load(json_file)
 
+        categories = self.annotation["categories"]
+        self.classes = [None] * len(categories)
+        self.superclasses = [None] * len(categories)
+        self.subclasses = [None] * len(categories)
+
+        for i in range(len(categories)):
+            klass_id = categories[i]['id']
+            klass = categories[i]['name']
+            superclass = categories[i]['supercategory']
+            subclass = klass.split()[1]
+
+            self.classes[klass_id] = klass
+            self.superclasses[klass_id] = superclass
+            self.subclasses[klass_id] = subclass
+
+
     def __len__(self,):
         """
         Returns:
