@@ -18,8 +18,7 @@ rename 's/[0-9]+_([^\.]*)(\.)?/$1/' *
 IFS=$'\n'
 for d in $(find -type d -regex "[^ ]* [a-zA-Z]+.*")
 do
-    mv $d/* $(echo $d | sed -E 's~([^ ]*).*~\1/~')
-    rm -r $d
+    mv $d/* $(echo $d | sed -E 's~([^ ]*).*~\1/~') && rm -r $d
 done
 rename 's/([^\s]*).*/$1/' *
 

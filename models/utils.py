@@ -6,14 +6,14 @@ from .googlenet import *
 from .shufflenetV2 import *
 from .alexnet import *
 from .misc import *
-
+import os
 
 
 def get_model(args):
-    import os
-    output_dim = len(os.listdir(args.path))
+
+    output_dim = len(os.listdir(os.path.join(args.data_path, "images")))
     if "resnet" in args.model:
-        (model, params) = get_resnet_model(args.model, args.lr, output_dim)
+        (model, params) = get_resnet_model(args.model, args.lr, output_dim, args.device)
     elif "vgg" in args.model:
         (model, params) = get_vgg_model(args.model, args.lr, output_dim)
     elif "googlenet" in args.model:
