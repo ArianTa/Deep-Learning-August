@@ -16,7 +16,7 @@ import random
 import copy
 from pydoc import locate
 
-
+from tensorboardX import SummaryWriter
 
 import utils
 
@@ -98,6 +98,12 @@ if __name__ == "__main__":
         type=float,
         default=10,
         help="The highest learning rate considered if --flind_lr is set"
+    )
+    parser.add_argument(
+        "--log",
+        type=str,
+        default="results",
+        help="Log file path for tensorboardX"
     )
 
     # Add more stuff here maybe ?
