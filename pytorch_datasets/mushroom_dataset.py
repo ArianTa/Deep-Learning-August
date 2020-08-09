@@ -17,6 +17,7 @@ import glob
 from PIL import Image
 import json
 
+
 class MushroomDataset(Dataset):
     def __init__(
         self, root, annotation, transform=None,
@@ -56,18 +57,21 @@ class MushroomDataset(Dataset):
                 -"superclass": its superclass
                 -"subclass": its subclass
         """
- 
+
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
         category = self.annotation['annotations'][idx]['category_id']
 
-        path = self.annotation['images'][idx]['file_name'].replace(" ", "_").replace(".", "_").replace(":", "_")
+        path = self.annotation['images'][idx]['file_name'].replace(
+            " ", "_").replace(
+            ".", "_").replace(
+            ":", "_")
         path = list(path)
         path[-4] = "."
         path = "".join(path)
 
-        image = os.path.join(self.root, path) # KEK
+        image = os.path.join(self.root, path)  # KEK
         image = Image.open(image)
         image = self.transform(image)
 

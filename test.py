@@ -36,45 +36,47 @@ def get_predictions(model, iterator):
 
             y_pred, _ = model(x)
 
-            y_prob = F.softmax(y_pred, dim = -1)
-            top_pred = y_prob.argmax(1, keepdim = True)
+            y_prob = F.softmax(y_pred, dim=-1)
+            top_pred = y_prob.argmax(1, keepdim=True)
 
             labels.append(y.to('cpu'))
             probs.append(y_prob.to('cpu'))
 
-    labels = torch.cat(labels, dim = 0)
-    probs = torch.cat(probs, dim = 0)
+    labels = torch.cat(labels, dim=0)
+    probs = torch.cat(probs, dim=0)
 
     return labels, probs
 
+
 def plot_confusion_matrix(labels, pred_labels, classes):
-    
-    fig = plt.figure(figsize = (250, 250))
+
+    fig = plt.figure(figsize=(250, 250))
     ax = fig.add_subplot(1, 1, 1)
-    cm = confusion_matrix(labels, pred_labels, normalize = 'true')
-    cm = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels = classes)
-    cm.plot(include_values = False, cmap = 'Blues', ax = ax)
-    fig.delaxes(fig.axes[1]) #delete colorbar
-    plt.xticks(rotation = 90)
-    plt.xlabel('Predicted Label', fontsize = 50)
-    plt.ylabel('True Label', fontsize = 50)
+    cm = confusion_matrix(labels, pred_labels, normalize='true')
+    cm = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classes)
+    cm.plot(include_values=False, cmap='Blues', ax=ax)
+    fig.delaxes(fig.axes[1])  # delete colorbar
+    plt.xticks(rotation=90)
+    plt.xlabel('Predicted Label', fontsize=50)
+    plt.ylabel('True Label', fontsize=50)
     plt.savefig('kek4.png', dpi=100)
 
-def plot_most_incorrect(incorrect, classes, n_images, normalize = True):
+
+def plot_most_incorrect(incorrect, classes, n_images, normalize=True):
 
     rows = int(np.sqrt(n_images))
     cols = int(np.sqrt(n_images))
 
-    fig = plt.figure(figsize = (25, 20))
+    fig = plt.figure(figsize=(25, 20))
 
-    for i in range(rows*cols):
+    for i in range(rows * cols):
 
-        ax = fig.add_subplot(rows, cols, i+1)
-        
+        ax = fig.add_subplot(rows, cols, i + 1)
+
         image, true_label, probs = incorrect[i]
         image = image.permute(1, 2, 0)
         true_prob = probs[true_label]
-        incorrect_prob, incorrect_label = torch.max(probs, dim = 0)
+        incorrect_prob, incorrect_label = torch.max(probs, dim=0)
         true_class = classes[true_label]
         incorrect_class = classes[incorrect_label]
 
@@ -82,11 +84,12 @@ def plot_most_incorrect(incorrect, classes, n_images, normalize = True):
             image = normalize_image(image)
 
         ax.imshow(image.cpu().numpy())
-        ax.set_title(f'true label: {true_class} ({true_prob:.3f})\n' \
+        ax.set_title(f'true label: {true_class} ({true_prob:.3f})\n'
                      f'pred label: {incorrect_class} ({incorrect_prob:.3f})')
         ax.axis('off')
-        
+
     fig.subplots_adjust(hspace=0.4)
+
 
 def get_representations(model, iterator):
 
@@ -97,7 +100,7 @@ def get_representations(model, iterator):
     labels = []
 
     with torch.no_grad():
-        
+
         for (x, y) in iterator:
 
             x = x.to(device)
@@ -106,46 +109,46 @@ def get_representations(model, iterator):
 
             outputs.append(y_pred.cpu())
             labels.append(y)
-        
-    outputs = torch.cat(outputs, dim = 0)
-    labels = torch.cat(labels, dim = 0)
+
+    outputs = torch.cat(outputs, dim=0)
+    labels = torch.cat(labels, dim=0)
 
     return outputs, labels
 
-def get_pca(data, n_components = 2):
+
+def get_pca(data, n_components=2):
     pca = decomposition.PCA()
     pca.n_components = n_components
     pca_data = pca.fit_transform(data)
     return pca_data
 
 
+def plot_representations(data, labels, classes, n_images=None):
 
-def plot_representations(data, labels, classes, n_images = None):
-            
     if n_images is not None:
         data = data[:n_images]
         labels = labels[:n_images]
-                
-    fig = plt.figure(figsize = (15, 15))
+
+    fig = plt.figure(figsize=(15, 15))
     ax = fig.add_subplot(111)
-    scatter = ax.scatter(data[:, 0], data[:, 1], c = labels, cmap = 'hsv')
+    scatter = ax.scatter(data[:, 0], data[:, 1], c=labels, cmap='hsv')
     #handles, _ = scatter.legend_elements(num = None)
     #legend = plt.legend(handles = handles, labels = classes)
 
-def get_tsne(data, n_components = 2, n_images = None):
-    
+
+def get_tsne(data, n_components=2, n_images=None):
+
     if n_images is not None:
         data = data[:n_images]
-        
-    tsne = manifold.TSNE(n_components = n_components, random_state = 0)
+
+    tsne = manifold.TSNE(n_components=n_components, random_state=0)
     tsne_data = tsne.fit_transform(data)
     return tsne_data
 
 
+def plot_filtered_images(images, filters, n_filters=None, normalize=True):
 
-def plot_filtered_images(images, filters, n_filters = None, normalize = True):
-
-    images = torch.cat([i.unsqueeze(0) for i in images], dim = 0).cpu()
+    images = torch.cat([i.unsqueeze(0) for i in images], dim=0).cpu()
     filters = filters.cpu()
 
     if n_filters is not None:
@@ -156,7 +159,7 @@ def plot_filtered_images(images, filters, n_filters = None, normalize = True):
 
     filtered_images = F.conv2d(images, filters)
 
-    fig = plt.figure(figsize = (30, 30))
+    fig = plt.figure(figsize=(30, 30))
 
     for i in range(n_images):
 
@@ -165,8 +168,8 @@ def plot_filtered_images(images, filters, n_filters = None, normalize = True):
         if normalize:
             image = normalize_image(image)
 
-        ax = fig.add_subplot(n_images, n_filters+1, i+1+(i*n_filters))
-        ax.imshow(image.permute(1,2,0).numpy())
+        ax = fig.add_subplot(n_images, n_filters + 1, i + 1 + (i * n_filters))
+        ax.imshow(image.permute(1, 2, 0).numpy())
         ax.set_title('Original')
         ax.axis('off')
 
@@ -176,14 +179,16 @@ def plot_filtered_images(images, filters, n_filters = None, normalize = True):
             if normalize:
                 image = normalize_image(image)
 
-            ax = fig.add_subplot(n_images, n_filters+1, i+1+(i*n_filters)+j+1)
-            ax.imshow(image.numpy(), cmap = 'bone')
+            ax = fig.add_subplot(n_images, n_filters + 1,
+                                 i + 1 + (i * n_filters) + j + 1)
+            ax.imshow(image.numpy(), cmap='bone')
             ax.set_title(f'Filter {j+1}')
-            ax.axis('off');
+            ax.axis('off')
 
-    fig.subplots_adjust(hspace = -0.7)
+    fig.subplots_adjust(hspace=-0.7)
 
-def plot_filters(filters, normalize = True):
+
+def plot_filters(filters, normalize=True):
 
     filters = filters.cpu()
 
@@ -192,20 +197,20 @@ def plot_filters(filters, normalize = True):
     rows = int(np.sqrt(n_filters))
     cols = int(np.sqrt(n_filters))
 
-    fig = plt.figure(figsize = (30, 15))
+    fig = plt.figure(figsize=(30, 15))
 
-    for i in range(rows*cols):
+    for i in range(rows * cols):
 
         image = filters[i]
 
         if normalize:
             image = normalize_image(image)
 
-        ax = fig.add_subplot(rows, cols, i+1)
+        ax = fig.add_subplot(rows, cols, i + 1)
         ax.imshow(image.permute(1, 2, 0))
         ax.axis('off')
-        
-    fig.subplots_adjust(wspace = -0.9)
+
+    fig.subplots_adjust(wspace=-0.9)
 
 
 def test(**kwargs):

@@ -151,8 +151,7 @@ def plot_lr_finder(
     plt.show()
 
 
-
-def find_learning_rate(nb_iter = 100, **kwargs):
+def find_learning_rate(nb_iter=100, **kwargs):
     globals().update(kwargs)
     model.to(device)
     criterion.to(device)

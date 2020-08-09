@@ -11,6 +11,7 @@ from find_lr import count_parameters
 
 from utils import *
 
+
 def train_epoch(
     model, iterator, optimizer, criterion, scheduler, device
 ):
@@ -34,7 +35,7 @@ def train_epoch(
         y = y.to(device)
 
         optimizer.zero_grad()
-        
+
         y_pred = model(x)
 
         if isinstance(y_pred, tuple):
@@ -48,7 +49,8 @@ def train_epoch(
         (acc_1, acc_5,) = calculate_topk_accuracy(y_pred, y,)
 
         if DEBUG:
-            print(f"{i}th batch train accuracies: top1: {acc_1.item()*100:6.2f} | top5: {acc_5.item()*100:6.2f}")
+            print(
+                f"{i}th batch train accuracies: top1: {acc_1.item()*100:6.2f} | top5: {acc_5.item()*100:6.2f}")
 
         loss.backward()
 
@@ -131,7 +133,6 @@ def train(**kwargs):
         print(
             f"The model has {count_parameters(model):,} trainable parameters"
         )
-    
 
     # We can start the training of the model
     TOTAL_STEPS = epochs * len(train_iterator)
@@ -171,4 +172,3 @@ def train(**kwargs):
         print(
             f"\tValid Loss: {valid_loss:.3f} | Valid Acc @1: {valid_acc_1*100:6.2f}% | "
             f"Valid Acc @5: {valid_acc_5*100:6.2f}%")
-

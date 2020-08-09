@@ -18,7 +18,6 @@ from pydoc import locate
 from tensorboardX import SummaryWriter
 
 
-
 from train import train
 from test import test
 from find_lr import find_learning_rate
@@ -43,7 +42,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--mode",
-        default = "train",
+        default="train",
         help="Mode, train or test model."
     )
     parser.add_argument(
@@ -124,7 +123,8 @@ if __name__ == "__main__":
     torch.backends.cudnn.deterministic = True
 
     # device
-    device = torch.device("cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
+    device = torch.device(
+        "cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
 
     # criterion
     criterion = nn.CrossEntropyLoss()
@@ -134,19 +134,9 @@ if __name__ == "__main__":
     model = get_model(args)
     model.to(device)
 
-
-    if args.model == "resnet152": 
+    if args.model == "resnet152":
         params = get_params(model, args.lr)
 
-        [
-            {"params": model.conv1.parameters(), "lr": args.lr / 10, },
-            {"params": model.bn1.parameters(), "lr": args.lr / 10, },
-            {"params": model.layer1.parameters(), "lr": args.lr / 8, },
-            {"params": model.layer2.parameters(), "lr": args.lr / 6, },
-            {"params": model.layer3.parameters(), "lr": args.lr / 4, },
-            {"params": model.layer4.parameters(), "lr": args.lr / 2, },
-            {"params": model.fc.parameters()},
-        ]
     else:
         params = model.parameters()
 
@@ -162,7 +152,6 @@ if __name__ == "__main__":
         ) if args.debug else utils.dummy_context_mgr():
             model.load_state_dict(torch.load(args.weights))
 
-
     meta_data = {
         "DEBUG": True if args.debug else False,
         "device": device,
@@ -171,16 +160,18 @@ if __name__ == "__main__":
         "criterion": criterion
     }
 
-    
     train_transforms = locate(
-            "pytorch_transforms." + args.transforms + ".train_transforms"
-        )
+        "pytorch_transforms." + args.transforms + ".train_transforms"
+    )
 
     test_transforms = locate(
-            "pytorch_transforms." + args.transforms + ".test_transforms"
-        )
+        "pytorch_transforms." + args.transforms + ".test_transforms"
+    )
 
-    dataset = MushroomDataset(root=args.data_path, annotation=args.json_path, transform=None)
+    dataset = MushroomDataset(
+        root=args.data_path,
+        annotation=args.json_path,
+        transform=None)
 
     if args.mode == "train":
         train_data = dataset
@@ -199,7 +190,7 @@ if __name__ == "__main__":
         train_iterator = data.DataLoader(
             train_data, shuffle=True, batch_size=args.batch,
         )
-        
+
         valid_iterator = data.DataLoader(valid_data, batch_size=args.batch,)
 
         meta_data.update({
@@ -208,7 +199,6 @@ if __name__ == "__main__":
             "valid_iterator": valid_iterator,
             "file_name": args.save
         })
-
 
         train(**meta_data)
 

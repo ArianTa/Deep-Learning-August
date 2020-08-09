@@ -290,6 +290,4 @@ def get_resnet_model(
     model = ResNet(resnet_config, output_dim,)
     model.load_state_dict(pretrained_model.state_dict())
 
-
-
     return model
