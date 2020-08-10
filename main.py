@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.optim.lr_scheduler as lr_scheduler
 import torch_optimizer as optimizer
 import torchvision.transforms as transforms
 import torch.utils.data as data
@@ -15,8 +16,9 @@ import os
 import random
 import copy
 from pydoc import locate
+import math
 
-from tensorboardX import SummaryWriter
+#from tensorboardX import SummaryWriter
 
 
 from train import train
@@ -29,6 +31,9 @@ from utils import *
 if __name__ == "__main__":
     # Parsing arguments and setting up metadata
     parser = argparse.ArgumentParser(description="Train a model")
+    parser.add_argument(
+        "--debug", action="store_true", help="Print debug info",
+    )
     parser.add_argument(
         "--data_path",
         type=str,
@@ -59,6 +64,24 @@ if __name__ == "__main__":
         "--model", type=str, default="resnet152", help="CNN model to be used",
     )
     parser.add_argument(
+        "--optimizer",
+        type=str,
+        default="SGD",
+        help="Optimizer to be used"
+    )
+    parser.add_argument(
+        "--criterion",
+        type=str,
+        default="CrossEntropyLoss",
+        help="Criterion to be used"
+    )
+    parser.add_argument(
+        "--scheduler",
+        type=str,
+        default="OneCycleLR",
+        help="scheduler to be used"
+    )
+    parser.add_argument(
         "--save",
         type=str,
         default="model_weights.pt",
@@ -86,13 +109,10 @@ if __name__ == "__main__":
         help="The pytorch transforms to be used",
     )
     parser.add_argument(
-        "--debug", action="store_true", help="Print debug info",
-    )
-    parser.add_argument(
-        "--weights",
+        "--load",
         type=str,
         default=None,
-        help="Specify a path for existing weights",
+        help="Specify a path for a checkpoint",
     )
     parser.add_argument(
         "--find_lr",
@@ -104,18 +124,6 @@ if __name__ == "__main__":
         type=float,
         default=10,
         help="The highest learning rate considered if --flind_lr is set"
-    )
-    parser.add_argument(
-        "--log",
-        type=str,
-        default="results",
-        help="Log file path for tensorboard"
-    )
-    parser.add_argument(
-        "--optimizer",
-        type=str,
-        default="SGD",
-        help="Optimizer to be used"
     )
     parser.add_argument(
         "--no_bias",
@@ -149,13 +157,14 @@ if __name__ == "__main__":
         "cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
 
     # criterion
-    criterion = nn.CrossEntropyLoss()
+    criterion = get_criterion(args)
     criterion.to(device)
 
-    # Get the model and is parameters that are to be optimized
+    # Get the model 
     model = get_model(args)
     model.to(device)
 
+    # Resnet is a special case since it's the best model for our task
     if args.model == "resnet152":
         params = get_params(model, args)
 
@@ -163,38 +172,12 @@ if __name__ == "__main__":
         params = model.parameters()
 
     # Optimizer
-    if args.optimizer == "SGD":
-        optimizer = optim.SGD(
-            params, lr=args.lr, momentum=0.9, weight_decay=5e-4,
-        )
-    elif args.optimizer == "DiffGrad":
-        optimizer = optimizer.DiffGrad(
-            params,
-            lr= 1e-3,
-            betas=(0.9, 0.999),
-            eps=1e-8,
-            weight_decay=0,
-        )
+    optimizer = get_optimizer(params, args)
 
-    # Load the weight into the model
-    if args.weights:
-        with measure_time(
-            "Loading weights"
-        ) if args.debug else dummy_context_mgr():
-            model.load_state_dict(torch.load(args.weights))
-
-    meta_data = {
-        "DEBUG": True if args.debug else False,
-        "device": device,
-        "model": model,
-        "optimizer": optimizer,
-        "criterion": criterion
-    }
-
+    # Load transforms
     train_transforms = locate(
         "pytorch_transforms." + args.transforms + ".train_transforms"
     )
-
     test_transforms = locate(
         "pytorch_transforms." + args.transforms + ".test_transforms"
     )
@@ -203,6 +186,35 @@ if __name__ == "__main__":
         root=args.data_path,
         annotation=args.json_path,
         transform=None)
+
+    # Scheduler - can't be inferred from args alone
+    if args.scheduler == "OneCycleLR":
+        TOTAL_STEPS = args.epochs * math.ceil(len(dataset) / args.batch)
+
+        MAX_LRS = [p["lr"] for p in optimizer.param_groups]
+
+        scheduler = lr_scheduler.OneCycleLR(
+            optimizer, max_lr=MAX_LRS, total_steps=TOTAL_STEPS,
+        )
+
+    # Load the weight into the model
+    if args.load:
+        state_dict = torch.load(args.load)
+        model.load_state_dict(state_dict['model'])
+        start_epoch = state_dict['epoch']
+        optimizer.load_state_dict(state_dict['optimizer'])
+
+        if args.scheduler == "StepLR":
+            scheduler.load_state_dict(state_dict['scheduler'])
+    else:
+        start_epoch = 0
+
+
+    meta_data = dict(
+        DEBUG = True if args.debug else False,
+        device = device,
+        model = model
+    )
 
     if args.mode == "train":
         train_data = dataset
@@ -224,12 +236,16 @@ if __name__ == "__main__":
 
         valid_iterator = data.DataLoader(valid_data, batch_size=args.batch,)
 
-        meta_data.update({
-            "epochs": args.epochs,
-            "train_iterator": train_iterator,
-            "valid_iterator": valid_iterator,
-            "file_name": args.save
-        })
+        meta_data.update(dict(
+            epochs= args.epochs,
+            train_iterator= train_iterator,
+            valid_iterator= valid_iterator,
+            file_name= args.save,
+            optimizer = optimizer,
+            criterion = criterion,
+            start_epoch = start_epoch,
+            scheduler = scheduler
+        ))
 
         train(**meta_data)
 
@@ -237,25 +253,27 @@ if __name__ == "__main__":
         test_data = dataset
         test_data.transform = test_transforms
 
-        meta_data.update({
-            "test_data": test_data,
-            "classes": test_data.classes,
-            "test_iterator": data.DataLoader(
+        meta_data.update(dict(
+            test_data= test_data,
+            classes= test_data.classes,
+            test_iterator= data.DataLoader(
                 test_data, shuffle=True, batch_size=args.batch,
             )
-        })
+        ))
         test(**meta_data)
 
     elif args.mode == "find_lr":
         test_data = dataset
         test_data.transform = test_transforms
 
-        meta_data.update({
-            "end_lr": args.end_lr,
-            "classes": train_data.classes,
-            "iterator": data.DataLoader(
+        meta_data.update(dict(
+            optimizer = optimizer,
+            criterion = criterion,
+            end_lr= args.end_lr,
+            classes= train_data.classes,
+            iterator= data.DataLoader(
                 train_data, shuffle=True, batch_size=args.batch,
             )
-        })
+        ))
         
         find_learning_rate(**meta_data)

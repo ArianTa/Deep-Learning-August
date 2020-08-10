@@ -3,7 +3,8 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 import numpy as np
-
+import torch.optim as optim
+import torch_optimizer as optimizer
 import time
 import datetime
 from contextlib import contextmanager
@@ -235,3 +236,21 @@ def get_params(resnet, args):
         params = resnet.parameters()
 
     return params
+
+def get_criterion(args):
+    return nn.CrossEntropyLoss()
+
+def get_optimizer(params, args):
+    if args.optimizer == "SGD":
+        return optim.SGD(
+                params, lr=args.lr, momentum=0.9, weight_decay=5e-4,
+            )
+    elif args.optimizer == "DiffGrad":
+        return optimizer.DiffGrad(
+                params,
+                lr= 1e-3,
+                betas=(0.9, 0.999),
+                eps=1e-8,
+                weight_decay=0,
+            )
+

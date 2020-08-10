@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.transforms as transforms
-import torch.optim.lr_scheduler as lr_scheduler
 from torch.optim.lr_scheduler import _LRScheduler
 
 from find_lr import count_parameters
@@ -134,17 +133,8 @@ def train(**kwargs):
             f"The model has {count_parameters(model):,} trainable parameters"
         )
 
-    # We can start the training of the model
-    TOTAL_STEPS = epochs * len(train_iterator)
-
-    MAX_LRS = [p["lr"] for p in optimizer.param_groups]
-
-    scheduler = lr_scheduler.OneCycleLR(
-        optimizer, max_lr=MAX_LRS, total_steps=TOTAL_STEPS,
-    )
-
     best_valid_loss = float("inf")
-    for epoch in range(epochs):
+    for epoch in range(start_epoch, epochs):
 
         start_time = time.time()
 
