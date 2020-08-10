@@ -2,7 +2,7 @@
 #
 # Slurm arguments
 #
-#SBATCH --job-name=mnist            # Name of the job 
+#SBATCH --job-name=arian_test            # Name of the job 
 #SBATCH --export=ALL                # Export all environment variables
 #SBATCH --output=mnist-output.log   # Log-file (important!)
 #SBATCH --cpus-per-task=2           # Number of CPU cores to allocate
