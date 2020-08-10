@@ -7,6 +7,7 @@
 #SBATCH --mem-per-cpu=4G
 #SBATCH --gres=gpu:1 
 #SBATCH --partition=debug
+#
 
 # Activate your Anaconda environment
 conda activate deep
