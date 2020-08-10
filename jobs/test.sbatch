@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 #
 # Slurm arguments
-#SBATCH --job-name=mnist
+#SBATCH --job-name=arian_test
 #SBATCH --output=/home/arian/results/resnet152_e20_batch_32_cyclic.log
+#SBATCH --export=ALL                # Export all environment variables
 #SBATCH --cpus-per-task=2
 #SBATCH --mem-per-cpu=4G
 #SBATCH --gres=gpu:1 
 #SBATCH --partition=debug
+#SBATCH --time=15:00:00              # Max execution time
 #
 
 # Activate your Anaconda environment
