@@ -243,7 +243,7 @@ def get_criterion(args):
 def get_optimizer(params, args):
     if args.optimizer == "SGD":
         return optim.SGD(
-                params, lr=args.lr, momentum=0.9, weight_decay=5e-4,
+                params, lr=args.lr, momentum=args.momentum, weight_decay=args.wdecay, nesterov=args.nesterov
             )
     elif args.optimizer == "DiffGrad":
         return optimizer.DiffGrad(

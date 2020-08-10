@@ -143,6 +143,20 @@ if __name__ == "__main__":
         action="store_true",
         help="Use erasure"
     )
+    parser.add_argument(
+        "--momentum",
+        type=float,
+        default=0.9
+    )
+    parser.add_argument(
+        "--wdecay",
+        type=float,
+        default=5e-4
+    )
+    parser.add_argument(
+        "--nesterov",
+        action="store_true"
+    )
 
     # Add more stuff here maybe ?
     args = parser.parse_args()
