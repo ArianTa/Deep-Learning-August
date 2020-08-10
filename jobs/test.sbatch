@@ -12,8 +12,8 @@
 #
 
 # Activate your Anaconda environment
-conda activate myenvironment         # CHANGEME
+conda activate deep
 
 # Run your Python script
-cd /home/you/mnist  # CHANGEME
-python mnist.py
+cd /home/arian/Deep-Learning-August
+python main.py --gpu --workers 2 --scheduler StepLR --batch 32 --epoch 20 --model resnet152 --optimizer SGD --save /home/arian/results/resnet152_e20_batch_32_cyclic.pt --data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json
