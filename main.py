@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch_optimizer as optimizer
 import torchvision.transforms as transforms
 import torch.utils.data as data
 from torch.utils.data import (
@@ -69,7 +70,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--valid_ratio",
         type=float,
-        default=0.90,
+        default=0.80,
         help="Ratio between the train set and validation set",
     )
     parser.add_argument(
@@ -110,7 +111,27 @@ if __name__ == "__main__":
         default="results",
         help="Log file path for tensorboard"
     )
-
+    parser.add_argument(
+        "--optimizer",
+        type=str,
+        default="SGD",
+        help="Optimizer to be used"
+    )
+    parser.add_argument(
+        "--no_bias",
+        action="store_true",
+        help="Set bias weight decay to 0",
+    )
+    parser.add_argument(
+        "--lr_decay",
+        action="store_true",
+        help="Use decaying learning rate"
+    )
+    parser.add_argument(
+        "--erasure",
+        action="store_true",
+        help="Use erasure"
+    )
 
     # Add more stuff here maybe ?
     args = parser.parse_args()
@@ -136,15 +157,24 @@ if __name__ == "__main__":
     model.to(device)
 
     if args.model == "resnet152":
-        params = get_params(model, args.lr)
+        params = get_params(model, args)
 
     else:
         params = model.parameters()
 
     # Optimizer
-    optimizer = optim.SGD(
-        params, lr=args.lr, momentum=0.9, weight_decay=5e-4,
-    )
+    if args.optimizer == "SGD":
+        optimizer = optim.SGD(
+            params, lr=args.lr, momentum=0.9, weight_decay=5e-4,
+        )
+    elif args.optimizer == "DiffGrad":
+        optimizer = optimizer.DiffGrad(
+            params,
+            lr= 1e-3,
+            betas=(0.9, 0.999),
+            eps=1e-8,
+            weight_decay=0,
+        )
 
     # Load the weight into the model
     if args.weights:
@@ -208,6 +238,7 @@ if __name__ == "__main__":
         test_data.transform = test_transforms
 
         meta_data.update({
+            "test_data": test_data,
             "classes": test_data.classes,
             "test_iterator": data.DataLoader(
                 test_data, shuffle=True, batch_size=args.batch,

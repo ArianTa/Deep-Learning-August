@@ -13,12 +13,15 @@ import numpy as np
 
 from utils import *
 
-
+import json
 
 
 def get_predictions(model, iterator):
 
     model.eval()
+
+    test_acc_1 = 0
+    test_acc_5 = 0
 
     images = []
     labels = []
@@ -39,11 +42,19 @@ def get_predictions(model, iterator):
             labels.append(y.cpu())
             probs.append(y_prob.cpu())
 
+            acc_1, acc_5 = calculate_topk_accuracy(y_pred.cpu(), y.cpu())
+            test_acc_1 += acc_1.item()
+            test_acc_5 += acc_5.item()
+
     images = torch.cat(images, dim = 0)
     labels = torch.cat(labels, dim = 0)
     probs = torch.cat(probs, dim = 0)
 
-    return images, labels, probs
+    test_acc_1 /= len(iterator)
+    test_acc_5 /= len(iterator)
+
+
+    return images, labels, probs, test_acc_1, test_acc_5
 
 
 
@@ -53,13 +64,15 @@ def plot_confusion_matrix(labels, pred_labels, classes):
     fig = plt.figure(figsize=(250, 250))
     ax = fig.add_subplot(1, 1, 1)
     cm = confusion_matrix(labels, pred_labels, normalize='true')
+    with open('confusion_matrix.json', 'w') as outfile:
+        json.dump(cm.tolist(), outfile)
     cm = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classes)
     cm.plot(include_values=False, cmap='Blues', ax=ax)
     fig.delaxes(fig.axes[1])  # delete colorbar
     plt.xticks(rotation=90)
     plt.xlabel('Predicted Label', fontsize=50)
     plt.ylabel('True Label', fontsize=50)
-    plt.savefig('kek4.png', dpi=100)
+    plt.savefig('results/confusion_matrix.png', dpi=100)
 
 
 def plot_most_incorrect(incorrect, classes, n_images, normalize=True):
@@ -84,12 +97,12 @@ def plot_most_incorrect(incorrect, classes, n_images, normalize=True):
             image = normalize_image(image)
 
         ax.imshow(image.cpu().numpy())
-        ax.set_title(f'true label: {true_class} ({true_prob:.3f})\n'
-                     f'pred label: {incorrect_class} ({incorrect_prob:.3f})')
+        ax.set_title(f'T: {true_class} ({true_prob:.3f})\n'
+                     f'P: {incorrect_class} ({incorrect_prob:.3f})')
         ax.axis('off')
 
     fig.subplots_adjust(hspace=0.4)
-
+    plt.savefig('results/most_incorrect.png')
 
 def get_representations(model, iterator):
 
@@ -132,6 +145,7 @@ def plot_representations(data, labels, classes, n_images=None):
     fig = plt.figure(figsize=(15, 15))
     ax = fig.add_subplot(111)
     scatter = ax.scatter(data[:, 0], data[:, 1], c=labels, cmap='hsv')
+    plt.savefig('results/representation.png')
     #handles, _ = scatter.legend_elements(num = None)
     #legend = plt.legend(handles = handles, labels = classes)
 
@@ -186,7 +200,7 @@ def plot_filtered_images(images, filters, n_filters=None, normalize=True):
             ax.axis('off')
 
     fig.subplots_adjust(hspace=-0.7)
-
+    plt.savefig('results/filtered_image.png')
 
 def plot_filters(filters, normalize=True):
 
@@ -211,18 +225,20 @@ def plot_filters(filters, normalize=True):
         ax.axis('off')
 
     fig.subplots_adjust(wspace=-0.9)
-
+    plt.savefig('results/filters.png')
 
 def test(**kwargs):
     globals().update(kwargs)
 
     with measure_time("Getting predictions"):
-        images, labels, probs = get_predictions(model, test_iterator)
+        images, labels, probs, acc_1, acc_5 = get_predictions(model, test_iterator)
 
     pred_labels = torch.argmax(probs, 1)
 
-    with measure_time("Confusion matrix"):
+    with measure_time("Big confusion matrix"):
         plot_confusion_matrix(labels, pred_labels, classes)
+
+    print(f"Test Acc @1: {acc_1*100:6.2f}% | Test Acc @5: {acc_5*100:6.2f}%")
 
     corrects = torch.eq(labels, pred_labels)
 
@@ -240,8 +256,8 @@ def test(**kwargs):
 
     outputs, labels = get_representations(model, test_iterator)
 
-    output_tsne_data = get_tsne(outputs)
-    plot_representations(output_tsne_data, labels, classes)
+    output_pca_data = get_pca(outputs)
+    plot_representations(output_pca_data, labels, classes)
 
     N_IMAGES = 5
     N_FILTERS = 7

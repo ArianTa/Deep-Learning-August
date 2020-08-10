@@ -157,9 +157,12 @@ def train(**kwargs):
 
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
-            torch.save(
-                model.state_dict(), file_name,
-            )
+            torch.save({
+                "model": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scheduler": scheduler.state_dict(),
+                "epoch": epoch + 1
+            }, file_name)
 
         end_time = time.time()
 

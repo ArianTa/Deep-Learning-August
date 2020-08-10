@@ -14,6 +14,7 @@ train_transforms = transforms.Compose(
         transforms.RandomCrop(size, padding=20,),
         transforms.ToTensor(),
         transforms.Normalize(mean=means, std=stds,),
+        transforms.RandomErasing(),
     ]
 )
 
@@ -25,3 +26,4 @@ test_transforms = transforms.Compose(
         transforms.Normalize(mean=means, std=stds,),
     ]
 )
+

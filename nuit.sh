@@ -13,4 +13,11 @@
 #python3 -u main.py --mode train --gpu --model resnet151 --epochs 10 --batch 32 --optimizer SGD --save ./results/resnet151_decay_e10_b32_sgd.pt | tee ./results/resnet151_decay_e10_b32_sgd.log
 #python3 -u main.py --mode train --gpu --model resnext101_32x8d --epoch 10 --batch 16 --optimizer SGD --save ./results/resnext101_32x8d_e10_b16_sgd.pt | tee ./results/resnext101_32x8d_e10_b16_sgd.log
 #python3 -u main.py --mode train --gpu --model vgg19 --epoch 10 --batch 32 --optimizer SGD --save ./results/vgg19_e10_b32_sgd.pt | tee ./results/vgg19_e10_b32_sgd.log
-python3 -u main.py --mode train --gpu --model resnet151 --epochs 20 --batch 32 --save ./results/resnet151_decay_e20_b32_sgd.pt | tee ./results/resnet151_decay_e20_b32_sgd.log
+#python3 -u main.py --mode train --gpu --model resnet151 --epochs 20 --batch 32 --save ./results/resnet151_decay_e20_b32_sgd.pt | tee ./results/resnet151_decay_e20_b32_sgd.log
+
+
+#python3 -u main.py --mode train --gpu --model resnet152 --optimizer SGD --epochs 5 --batch 32 --save ./results/resnet152_e5_b32_sgd.pt | tee ./results/resnet152_e5_b32_sgd.log
+python3 -u main.py --mode train --gpu --model resnet152 --optimizer DiffGrad --epochs 5 --batch 32 --save ./results/resnet152_e5_b32_diffgrad.pt | tee ./results/resnet152_e5_b32_diffgrad.log
+#python3 -u main.py --mode train --gpu --model resnet152 --optimizer SGD --transforms erasure_transforms --epochs 5 --batch 32 --save ./results/resnet152_e5_b32_diffgrad.pt | tee ./results/resnet152_e5_b32_diffgrad.log
+#python3 -u main.py --mode train --gpu --model resnet152 --optimizer SGD --no_bias --epochs 5 --batch 32 --save ./results/resnet152_e5_b32_bias.pt | tee ./results/resnet152_e5_b32_bias.log
+#python3 -u main.py --mode train --gpu --model resnet152 --optimizer SGD --lr_decay --epochs 5 --batch 32 --save ./results/resnet152_e5_b32_decay.pt | tee ./results/resnet152_e5_b32_decay.log

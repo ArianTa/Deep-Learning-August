@@ -175,48 +175,63 @@ def get_model(args):
     return model
 
 
-def get_params(resnet, base_lr):
+def get_params(resnet, args):
     """
     """
     assert isinstance(resnet, ResNet)
+    base_lr = args.lr
 
-    def no_bias_decay(net, lr):
-        decay = []
-        no_decay = []
-        for m in net.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-                decay.append(m.weight)
+    if args.lr_decay:
+        params = [
+            {"params": resnet.conv1.parameters(), "lr": base_lr / 10},
+            {"params": resnet.bn1.parameters(), "lr": base_lr / 10},
+            {"params": resnet.layer1.parameters(), "lr": base_lr / 8},
+            {"params": resnet.layer2.parameters(), "lr": base_lr / 6},
+            {"params": resnet.layer3.parameters(), "lr": base_lr / 4},
+            {"params": resnet.layer4.parameters(), "lr": base_lr / 2},
+            {"params": resnet.fc.parameters()},
+        ]
+    elif args.no_bias:
+        def no_bias_decay(net, lr):
+            decay = []
+            no_decay = []
+            for m in net.modules():
+                if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+                    decay.append(m.weight)
 
-                if m.bias is not None:
-                    no_decay.append(m.bias)
+                    if m.bias is not None:
+                        no_decay.append(m.bias)
 
-            else:
-                if hasattr(m, 'weight'):
-                    no_decay.append(m.weight)
-                if hasattr(m, 'bias'):
-                    no_decay.append(m.bias)
+                else:
+                    if hasattr(m, 'weight'):
+                        no_decay.append(m.weight)
+                    if hasattr(m, 'bias'):
+                        no_decay.append(m.bias)
 
-        return [
-            dict(
-                params=decay, lr=lr), dict(
-                params=no_decay, weight_decay=0, lr=lr)]
+            return [
+                dict(
+                    params=decay, lr=lr), dict(
+                    params=no_decay, weight_decay=0, lr=lr)]
 
-    length = 0
-    params = []
-    increasing_lr = [(resnet.conv1, base_lr /
-                      10), (resnet.bn1, base_lr /
-                            10), (resnet.layer1, base_lr /
-                                  8), (resnet.layer2, base_lr /
-                                       6), (resnet.layer3, base_lr /
-                                            4), (resnet.layer4, base_lr /
-                                                 2), (resnet.fc, base_lr)]
+        length = 0
+        params = []
+        increasing_lr = [(resnet.conv1, base_lr /
+                          10), (resnet.bn1, base_lr /
+                                10), (resnet.layer1, base_lr /
+                                      8), (resnet.layer2, base_lr /
+                                           6), (resnet.layer3, base_lr /
+                                                4), (resnet.layer4, base_lr /
+                                                     2), (resnet.fc, base_lr)]
 
-    for layer, lr in increasing_lr:
-        layer_params = no_bias_decay(layer, lr)
-        length += len(layer_params[0]['params']) + \
-            len(layer_params[1]['params'])
-        params += layer_params
+        for layer, lr in increasing_lr:
+            layer_params = no_bias_decay(layer, lr)
+            length += len(layer_params[0]['params']) + \
+                len(layer_params[1]['params'])
+            params += layer_params
 
-    assert len(list(resnet.parameters())) == length
+        assert len(list(resnet.parameters())) == length
+
+    else:
+        params = resnet.parameters()
 
     return params
