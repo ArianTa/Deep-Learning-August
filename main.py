@@ -188,14 +188,19 @@ if __name__ == "__main__":
         transform=None)
 
     # Scheduler - can't be inferred from args alone
+    total_steps = args.epochs * math.ceil(len(dataset) / args.batch)
+    max_lrs = [p["lr"] for p in optimizer.param_groups]
+
     if args.scheduler == "OneCycleLR":
-        TOTAL_STEPS = args.epochs * math.ceil(len(dataset) / args.batch)
-
-        MAX_LRS = [p["lr"] for p in optimizer.param_groups]
-
         scheduler = lr_scheduler.OneCycleLR(
-            optimizer, max_lr=MAX_LRS, total_steps=TOTAL_STEPS,
+            optimizer, max_lr=max_lrs, total_steps=total_steps,
         )
+    elif args.scheduler == "StepLR":
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=8, gamma=0.1)
+    elif args.scheduler == "CosineAnnealingLR":
+        scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=total_steps)
+    elif args.scheduler == "CyclicLR":
+        scheduler = lr_scheduler.CyclicLR(optimizer,base_lr=args.lr,max_lr=args.lr * 10)
 
     # Load the weight into the model
     if args.load:
