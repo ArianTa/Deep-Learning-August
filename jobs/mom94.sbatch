@@ -17,5 +17,5 @@ conda activate deep
 # Run your Python script
 cd /home/arian/Deep-Learning-August
 python main.py --gpu --workers 2 --scheduler CosineAnnealingLR --batch 32 --epoch 20 --model resnet152 \
-	--optimizer SGD --save /home/arian/results/resnet152_e20_batch_32_mom94.pt \
+	--optimizer SGD --save /home/arian/Deep-Learning-August/results/resnet152_e20_batch_32_mom94.pt \
 	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json --momentum 0.94
