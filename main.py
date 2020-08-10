@@ -55,6 +55,9 @@ if __name__ == "__main__":
         "--gpu", action="store_true", help="Use gpu",
     )
     parser.add_argument(
+        "--workers", type=int, default=2, help="Number of workers for dataloaders" 
+    )
+    parser.add_argument(
         "--batch", type=int, default=32, help="Batch size",
     )
     parser.add_argument(
@@ -156,6 +159,8 @@ if __name__ == "__main__":
     device = torch.device(
         "cuda:0" if torch.cuda.is_available() and args.gpu else "cpu")
 
+    print(device)
+
     # criterion
     criterion = get_criterion(args)
     criterion.to(device)
@@ -236,10 +241,10 @@ if __name__ == "__main__":
         valid_data.dataset.transform = test_transforms
 
         train_iterator = data.DataLoader(
-            train_data, shuffle=True, batch_size=args.batch,
+            train_data, shuffle=True, batch_size=args.batch, num_workers=args.workers,
         )
 
-        valid_iterator = data.DataLoader(valid_data, batch_size=args.batch,)
+        valid_iterator = data.DataLoader(valid_data, batch_size=args.batch, num_workers=args.workers)
 
         meta_data.update(dict(
             epochs= args.epochs,
@@ -262,7 +267,7 @@ if __name__ == "__main__":
             test_data= test_data,
             classes= test_data.classes,
             test_iterator= data.DataLoader(
-                test_data, shuffle=True, batch_size=args.batch,
+                test_data, shuffle=True, batch_size=args.batch, num_workers=args.workers,
             )
         ))
         test(**meta_data)
@@ -277,7 +282,7 @@ if __name__ == "__main__":
             end_lr= args.end_lr,
             classes= train_data.classes,
             iterator= data.DataLoader(
-                train_data, shuffle=True, batch_size=args.batch,
+                train_data, shuffle=True, batch_size=args.batch, num_workers=args.workers,
             )
         ))
         
