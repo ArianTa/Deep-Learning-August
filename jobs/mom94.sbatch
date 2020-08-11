@@ -2,7 +2,7 @@
 #
 # Slurm arguments
 #
-#SBATCH --job-name=MOMNQ            # Name of the job 
+#SBATCH --job-name=MOMNU            # Name of the job 
 #SBATCH --export=ALL                # Export all environment variables
 #SBATCH --output=/home/arian/Deep-Learning-August/results/resnet152_e20_batch_32_mom94.log
 #SBATCH --cpus-per-task=4           # Number of CPU cores to allocate
@@ -14,8 +14,14 @@
 # Activate your Anaconda environment
 conda activate deep
 
+LOG_DIR = /home/arian/Deep-Learning-August/results/mom94
+
+mkdir $(LOG_DIR)
+
+
 # Run your Python script
 cd /home/arian/Deep-Learning-August
 python main.py --gpu --workers 4 --scheduler CosineAnnealingLR --batch 32 --epoch 20 --model resnet152 \
-	--optimizer SGD --save /home/arian/Deep-Learning-August/results/resnet152_e20_batch_32_mom94.pt \
-	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json --momentum 0.94
+	--optimizer SGD --save $(LOG_DIR)/resnet152_e20_batch_32_mom94.pt \
+	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json --momentum 0.94 \
+	--save_log $(LOG_DIR)

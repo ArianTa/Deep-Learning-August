@@ -253,4 +253,11 @@ def get_optimizer(params, args):
                 eps=1e-8,
                 weight_decay=0,
             )
-
+    elif args.optimizer == "Adam":
+        return optim.Adam(params, lr=args.lr)
+    elif args.optimizer == "Adagrad":
+        return optim.Adagrad(params, lr=args.lr)
+    elif args.optimizer == "RMSprop":
+        return optim.RMSprop(params, lr=args.lr)
+    elif args.optimizer == "Adadelta"
+        return optim.Adadelta(params, lr=args.lr)

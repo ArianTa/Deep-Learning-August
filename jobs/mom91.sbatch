@@ -14,8 +14,14 @@
 # Activate your Anaconda environment
 conda activate deep
 
+LOG_DIR = /home/arian/Deep-Learning-August/results/mom91
+
+mkdir $(LOG_DIR)
+
+
 # Run your Python script
 cd /home/arian/Deep-Learning-August
 python main.py --gpu --workers 4 --scheduler CosineAnnealingLR --batch 32 --epoch 20 --model resnet152 \
-	--optimizer SGD --save /home/arian/Deep-Learning-August/results/resnet152_e20_batch_32_mom91.pt \
-	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json --momentum 0.91
+	--optimizer SGD --save $(LOG_DIR)/resnet152_e20_batch_32_mom91.pt \
+	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json --momentum 0.91 \
+	--save_log $(LOG_DIR)
