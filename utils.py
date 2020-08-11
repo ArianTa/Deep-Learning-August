@@ -259,5 +259,5 @@ def get_optimizer(params, args):
         return optim.Adagrad(params, lr=args.lr)
     elif args.optimizer == "RMSprop":
         return optim.RMSprop(params, lr=args.lr)
-    elif args.optimizer == "Adadelta":
+    elif args.optimizer == "Adadelta"
         return optim.Adadelta(params, lr=args.lr)
