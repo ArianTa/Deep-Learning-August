@@ -96,7 +96,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--valid_ratio",
         type=float,
-        default=0.80,
+        default=0.90,
         help="Ratio between the train set and validation set",
     )
     parser.add_argument(
@@ -207,7 +207,7 @@ if __name__ == "__main__":
         transform=None)
 
     # Scheduler - can't be inferred from args alone
-    total_steps = args.epochs * math.ceil(len(dataset) / args.batch)
+    total_steps = int(args.epochs * math.ceil(len(dataset) / args.batch) * valid_ratio)
     max_lrs = [p["lr"] for p in optimizer.param_groups]
 
     if args.scheduler == "OneCycleLR":
@@ -215,11 +215,11 @@ if __name__ == "__main__":
             optimizer, max_lr=max_lrs, total_steps=total_steps,
         )
     elif args.scheduler == "StepLR":
-        scheduler = lr_scheduler.StepLR(optimizer, step_size=8, gamma=0.1)
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=64, gamma=0.1)
     elif args.scheduler == "CosineAnnealingLR":
         scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=total_steps)
     elif args.scheduler == "CyclicLR":
-        scheduler = lr_scheduler.CyclicLR(optimizer,base_lr=args.lr,max_lr=args.lr * 10)
+        scheduler = lr_scheduler.CyclicLR(optimizer,base_lr=args.lr/math.sqrt(10),max_lr=args.lr * math.sqrt(10))
 
     # Load the weight into the model
     if args.load:
