@@ -207,7 +207,8 @@ if __name__ == "__main__":
         transform=None)
 
     # Scheduler - can't be inferred from args alone
-    total_steps = int(args.epochs * math.ceil(len(dataset) / args.batch) * valid_ratio)
+    total_steps = int(args.epochs * math.ceil(len(dataset) / args.batch) * args.valid_ratio)
+    print(total_steps)
     max_lrs = [p["lr"] for p in optimizer.param_groups]
 
     if args.scheduler == "OneCycleLR":
