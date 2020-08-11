@@ -1,3 +1,4 @@
+import os
 import time
 import torch
 import torch.nn as nn
@@ -25,7 +26,7 @@ def train_epoch(
         i = 0
         total = len(iterator)
 
-    for (x, y,) in iterator:
+    for n_batch, (x, y) in enumerate(iterator):
         if DEBUG:
             i += 1
             print(f"{i}th batch: total is {total}")
@@ -57,9 +58,24 @@ def train_epoch(
 
         scheduler.step()
 
+        n_iter = epoch * len(iterator) + n_batch + 1
+        for name, para in model.fc.named_parameters():
+            if 'weight' in name:
+                writer.add_scalar('LastLayerGradients/grad_norm2_weights', para.grad.norm(), n_iter)
+            if 'bias' in name:
+                writer.add_scalar('LastLayerGradients/grad_norm2_bias', para.grad.norm(), n_iter)
+        writer.add_scalar('Train/loss', loss.item(), n_iter)
+
         epoch_loss += loss.item()
         epoch_acc_1 += acc_1.item()
         epoch_acc_5 += acc_5.item()
+
+
+
+    for name, param in model.named_parameters():
+        layer, attr = os.path.splitext(name)
+        attr = attr[1:]
+        writer.add_histogram(f"{layer}/{attr}", param, epoch)
 
     epoch_loss /= len(iterator)
     epoch_acc_1 /= len(iterator)
@@ -135,7 +151,7 @@ def train(**kwargs):
 
     best_valid_loss = float("inf")
     for epoch in range(start_epoch, epochs):
-
+        globals()['epoch'] = epoch
         start_time = time.time()
 
         (train_loss, train_acc_1, train_acc_5,) = train_epoch(
@@ -165,3 +181,10 @@ def train(**kwargs):
         print(
             f"\tValid Loss: {valid_loss:.3f} | Valid Acc @1: {valid_acc_1*100:6.2f}% | "
             f"Valid Acc @5: {valid_acc_5*100:6.2f}%")
+
+        writer.add_scalar(f'Train/Average_loss', train_loss, epoch)
+        writer.add_scalar(f'Train/Top5_acc', train_acc_5, epoch)
+        writer.add_scalar(f'Train/Top1_acc', train_acc_1, epoch)
+        writer.add_scalar(f'Valid/Average_loss', valid_loss, epoch)
+        writer.add_scalar(f'Valid/Top5_acc', valid_acc_5, epoch)
+        writer.add_scalar(f'Valid/Top1_acc', valid_acc_1, epoch)

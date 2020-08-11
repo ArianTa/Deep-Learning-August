@@ -18,7 +18,7 @@ import copy
 from pydoc import locate
 import math
 
-#from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 
 from train import train
@@ -157,6 +157,10 @@ if __name__ == "__main__":
         "--nesterov",
         action="store_true"
     )
+    parser.add_argument(
+        "--save_log",
+        default="results",
+    )
 
     # Add more stuff here maybe ?
     args = parser.parse_args()
@@ -175,13 +179,18 @@ if __name__ == "__main__":
 
     print(device)
 
-    # criterion
-    criterion = get_criterion(args)
-    criterion.to(device)
-
     # Get the model 
     model = get_model(args)
     model.to(device)
+
+    # Tensor board
+    writer = SummaryWriter(log_dir=args.save_log)
+    input_tensor = torch.Tensor(1, 3, 224, 224).to(device)
+    writer.add_graph(model, input_tensor)
+
+    # criterion
+    criterion = get_criterion(args)
+    criterion.to(device)
 
     # Resnet is a special case since it's the best model for our task
     if args.model == "resnet152":
@@ -238,7 +247,8 @@ if __name__ == "__main__":
     meta_data = dict(
         DEBUG = True if args.debug else False,
         device = device,
-        model = model
+        model = model,
+        writer = writer
     )
 
     if args.mode == "train":
