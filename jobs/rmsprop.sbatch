@@ -14,14 +14,14 @@
 # Activate your Anaconda environment
 conda activate deep
 
-LOG_DIR = /home/arian/Deep-Learning-August/results/RMSprop
+LOG_DIR=/home/arian/Deep-Learning-August/results/RMSprop
 
-mkdir $(LOG_DIR)
+mkdir $LOG_DIR
 
 
 # Run your Python script
 cd /home/arian/Deep-Learning-August
 python main.py --gpu --workers 4 --scheduler CosineAnnealingLR --batch 32 --epoch 20 --model resnet152 \
-	--optimizer RMSprop --save $(LOG_DIR)/resnet152_e20_batch_32_RMSprop.pt \
+	--optimizer RMSprop --save $LOG_DIR/resnet152_e20_batch_32_RMSprop.pt \
 	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json \
-	--save_log $(LOG_DIR)
+	--save_log $LOG_DIR
