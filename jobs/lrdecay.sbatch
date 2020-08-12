@@ -4,7 +4,7 @@
 #
 #SBATCH --job-name=ADD            # Name of the job 
 #SBATCH --export=ALL                # Export all environment variables
-#SBATCH --output=/home/arian/Deep-Learning-August/results/resnet152_e20_batch_32_OneCycle.log
+#SBATCH --output=/home/arian/Deep-Learning-August/results/resnet152_e20_batch_32_lr_decay.log
 #SBATCH --cpus-per-task=4           # Number of CPU cores to allocate
 #SBATCH --mem-per-cpu=4G            # Memory to allocate per allocated CPU core
 #SBATCH --gres=gpu:1                # Number of GPU's
@@ -14,7 +14,7 @@
 # Activate your Anaconda environment
 conda activate deep
 
-LOG_DIR=/home/arian/Deep-Learning-August/results/OneCycle
+LOG_DIR=/home/arian/Deep-Learning-August/results/lr_decay
 
 mkdir $LOG_DIR
 
@@ -22,6 +22,6 @@ mkdir $LOG_DIR
 # Run your Python script
 cd /home/arian/Deep-Learning-August
 python main.py --gpu --workers 4 --batch 32 --epoch 20 --model resnet152 \
-	--save $LOG_DIR/resnet152_e20_batch_32_OneCycle.pt \
+	--save $LOG_DIR/resnet152_e20_batch_32_lr_decay.pt \
 	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json \
-	--save_log $LOG_DIR
+	--save_log $LOG_DIR --lr_decay
