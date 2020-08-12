@@ -248,7 +248,7 @@ def get_optimizer(params, args):
     elif args.optimizer == "DiffGrad":
         return optimizer.DiffGrad(
                 params,
-                lr= 1e-3,
+                lr= args.lr,
                 betas=(0.9, 0.999),
                 eps=1e-8,
                 weight_decay=0,
