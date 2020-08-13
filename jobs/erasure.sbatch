@@ -24,4 +24,4 @@ cd /home/arian/Deep-Learning-August
 python main.py --gpu --workers 4 --batch 32 --epoch 20 --model resnet152 \
 	--save $LOG_DIR/resnet152_e20_batch_32_erasure.pt \
 	--data_path /scratch/users/arian/data --json_path /scratch/users/arian/data/train.json \
-	--save_log $LOG_DIR --erasure
+	--save_log $LOG_DIR --transforms erasure_transforms
