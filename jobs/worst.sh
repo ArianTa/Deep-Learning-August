@@ -3,7 +3,7 @@
 # Slurm arguments
 #
 #SBATCH --job-name=ADD            # Name of the job 
-#SBATCH --export=ALL                # Export all environment variables
+#SBATCH --export=WADD                # Export all environment variables
 #SBATCH --output=/home/arian/Deep-Learning-August/results/resnet152_e20_batch_32_OneCycle_worst.log
 #SBATCH --cpus-per-task=4           # Number of CPU cores to allocate
 #SBATCH --mem-per-cpu=4G            # Memory to allocate per allocated CPU core
