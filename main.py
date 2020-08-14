@@ -139,11 +139,6 @@ if __name__ == "__main__":
         help="Use decaying learning rate"
     )
     parser.add_argument(
-        "--erasure",
-        action="store_true",
-        help="Use erasure"
-    )
-    parser.add_argument(
         "--momentum",
         type=float,
         default=0.9
@@ -185,8 +180,8 @@ if __name__ == "__main__":
 
     # Tensor board
     writer = SummaryWriter(log_dir=args.save_log)
-    input_tensor = torch.Tensor(1, 3, 224, 224).to(device)
-    writer.add_graph(model, input_tensor)
+    #input_tensor = torch.Tensor(1, 3, 224, 224).to(device)
+    #writer.add_graph(model, input_tensor)
 
     # criterion
     criterion = get_criterion(args)
