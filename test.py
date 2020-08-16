@@ -291,11 +291,6 @@ def test(**kwargs):
 
     save_most_incorrect(incorrect_examples, classes, N_IMAGES)
 
-    outputs, labels = get_representations(model, test_iterator)
-
-    output_pca_data = get_pca(outputs)
-    save_representations(output_pca_data, labels, classes)
-
     N_IMAGES = 5
     N_FILTERS = 7
 
