@@ -49,7 +49,7 @@ def get_predictions(model, iterator):
     images = torch.cat(images, dim = 0)
     labels = torch.cat(labels, dim = 0)
     probs = torch.cat(probs, dim = 0)
-
+    
     test_acc_1 /= len(iterator)
     test_acc_5 /= len(iterator)
 

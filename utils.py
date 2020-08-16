@@ -9,7 +9,7 @@ import time
 import datetime
 from contextlib import contextmanager
 from models import *
-
+import adabound
 
 @contextmanager
 def measure_time(label,):
@@ -261,3 +261,5 @@ def get_optimizer(params, args):
         return optim.RMSprop(params, lr=args.lr)
     elif args.optimizer == "Adadelta":
         return optim.Adadelta(params, lr=args.lr)
+    elif args.optimizer == "Adabound":
+        return adaboud.adabound(params, lr=args.lr, final_lr=0.1)
