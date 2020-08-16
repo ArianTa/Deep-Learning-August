@@ -269,8 +269,7 @@ def train(**kwargs):
         print(
             f"\tValid Loss: {valid_loss:.3f} | Valid Acc @1: {valid_acc_1*100:6.2f}% | "
             f"Valid Acc @5: {valid_acc_5*100:6.2f}%")
-        print(n_epoch)
-        print(epoch)
+
         writer.add_scalar(f'epoch/train_average_loss', train_loss, epoch + 1)
         writer.add_scalar(f'epoch/train_Top1_acc', train_acc_5, epoch + 1)
         writer.add_scalar(f'epoch/train_Top5_acc', train_acc_1, epoch + 1)
