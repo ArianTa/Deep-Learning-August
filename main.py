@@ -99,7 +99,7 @@ if __name__ == "__main__":
         "--scheduler",
         type=str,
         default="OneCycleLR",
-        help="scheduler to be used"
+        help="Scheduler to be used"
     )
     parser.add_argument(
         "--save",
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         help="Name of the saved weights",
     )
     parser.add_argument(
-        "--lr", type=float, default=10e-3, help="Sarting learning rate",
+        "--lr", type=float, default=10e-3, help="Value of the starting learning rate",
     )
     parser.add_argument(
         "--valid_ratio",
@@ -158,23 +158,26 @@ if __name__ == "__main__":
     parser.add_argument(
         "--momentum",
         type=float,
-        default=0.9
+        default=0.9,
+        help="Value of the momentum"
     )
     parser.add_argument(
         "--wdecay",
         type=float,
-        default=5e-4
+        default=5e-4,
+        help="Value of the weight decay"
     )
     parser.add_argument(
         "--nesterov",
-        action="store_true"
+        action="store_true",
+        help="Use the nesterov momentum"
     )
     parser.add_argument(
         "--save_log",
         default="results",
+        help="Path where to save the tensorboard logs"
     )
 
-    # Add more stuff here maybe ?
     args = parser.parse_args()
 
     # For reproducability

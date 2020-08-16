@@ -1,6 +1,6 @@
 # Mushroom Classification
 
-> Project for the INFO8010-1 course.
+> Project for the INFO8010-1 course of the Uliege University under the supervision of Professor Louppe.
 
 This project consists in classifying a huge dataset of mushrooms. 
 The dataset comes from the [FGCVx Fungi Classification Challenge dataset](https://www.kaggle.com/c/fungi-challenge-fgvc-2018/overview) 
@@ -47,25 +47,26 @@ This is a list that contains all the different parameters that can be used.
 - `--mode`: specify in which mode the script is to be run: `train` or `test`
 - `--gpu`: set this to use the gpu
 - `--workers`: set the number of workers for dataloaders. The default value is `2`
-- `--batch`: specify the batch size. The default is set to `32`
-- `--epochs`: specify the number of epochs. The default value is set to 10
+- `--batch`: specify the batch size. The default value is `32`
+- `--epochs`: specify the number of epochs. The default value is `10`
 - `--model`: specify the CNN model to be used. The default is set to `resnet152`. The different possible models are listed in the table below.
 - `--optimizer`: specify the optimizer to be used. The default is set to `SGD`. The different possible optimizers are listed in the table below.
 - `--criterion`: specify the criterion to be used. The default is set to `CrossEntropyLoss`. As of now, only this criterion is supported
 - `--scheduler`: specify the scheduler to be used. The default is set to `OneCycleLR`. The different possible schedulers are listed in the table below.
 - `--save`: specify under which name the weights should be saved. The default is set to `results/model_weights.pt`
-- `--lr`: specify the value of the starting learning rate. The default is set to 10e-3
-- `--valid_ratio`: specify the ratio between the train set and validation set. The default value is set to 0.90
-- `--seed`: specify a seed, for reproducability. The default is set to 1234
+- `--lr`: specify the value of the starting learning rate. The default value is `10e-3`
+- `--valid_ratio`: specify the ratio between the train set and validation set. The default value is `0.90`
+- `--seed`: specify a seed, for reproducability. The default value is `1234`
 - `--transforms`: specify the pytorch transforms to be used. The default is set to `imagenet_transforms`. The different possible pytorch transforms are listed in the table below.
 - `--load`: specify  a path for a checkpoint to continue training or to test
-- `--find_lr`: find the starting learning rate, if set, --lr becomes the lowest learning rate considered
-- `--no_bias`: the highest learning rate considered if --flind_lr is set. The default is set to 10
+- `--find_lr`: find the starting learning rate, if set, `--lr` becomes the lowest learning rate considered
+- `--end_lr`: the highest learning rate considered if `--flind_lr` is set. The default value is `10`
+- `--no_bias`: Specify if the bias weight decay is set to `0`.
 - `--lr_decay`: use different learning rate per layer, works only for the model `resnet152`
-- `--momentum`: specify the value of the momentum to be used. This parameter only works with the `SGD`optimizer and its default is set to 0.9
-- `--wdecay`: specify the value of the weight decay. This parameter only works with the `SGD`optimizer and its  default is set to 5e-4
+- `--momentum`: specify the value of the momentum to be used. This parameter only works with the `SGD`optimizer and its default value is `0.9`
+- `--wdecay`: specify the value of the weight decay. This parameter only works with the `SGD`optimizer and its default value is `5e-4`
 - `--nesterov`: specify whether or not to use the nesterov momentum. This parameter only works with the `SGD`optimizer
-- `--save_log`: specify where to save the tensorboard logs. The default is set to `results/`
+- `--save_log`: specify the path where the tensorboard logs should be saved. The default is set to `results/`
 
 The different models that are available are listed in the table below.
 
@@ -102,8 +103,15 @@ The different schedulers that are supported are listed in the table below.
 |**One Cycle** | `OneCycleLR`|
 | **Step decay**|`StepLR`|
 
-pytorch transforms:
+The different pytorch transforms that are supported are listed in the table below.
 
+|Transforms |Commands| Description|
+| --- | --- |--- |
+|**ImageNet**|`imagenet_transforms`|Standard ImageNet transforms|
+|**Erasure**| `erasure_transforms`| ImageNet with added random erasure |
+|**Custom**|`mushroom_transform`| Our own transforms|
+
+The pytorch transforms are modules of the `pytorch_transforms` package that define the train transforms and test transforms.
 
 
 ## Test
@@ -122,7 +130,10 @@ python main.py --gpu \
 	--nesterov
 ```
 The tensorboard logs and the weights of the model will be saved in the `results` directory.
+
+
 ## Meta
+
 
 Authors : 
 - Nora Folon - nfolon@student.ulg.ac.be
