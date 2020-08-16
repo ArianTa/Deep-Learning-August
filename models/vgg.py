@@ -1,10 +1,20 @@
-"""vgg in pytorch
-[1] Karen Simonyan, Andrew Zisserman
-    Very Deep Convolutional Networks for Large-Scale Image Recognition.
-    https://arxiv.org/abs/1409.1556v6
 """
-"""VGG11/13/16/19 in Pytorch."""
+INFO8010: Mushroom classification
+Authors: Folon Nora, Horbach Amadis, Tahiraj Arian
 
+Parts of the code are inspired from:
+    - Title: PyTorch Image Classification
+      Authors: Ben Trevett
+      Availability: https://github.com/bentrevett/pytorch-image-classification
+
+    - Title: Pytorch-cifar100
+      Authors: weiaicunzai
+      Availability: https://github.com/weiaicunzai/pytorch-cifar100
+
+    - Title: Bag of Tricks for Image Classification with Convolutional Neural Networks
+      Authors: weiaicunzai
+      Availability: https://github.com/weiaicunzai/Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks
+"""
 
 import torch
 import torch.nn as nn
