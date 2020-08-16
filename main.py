@@ -87,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save",
         type=str,
-        default="model_weights.pt",
+        default="results/model_weights.pt",
         help="Name of the saved weights",
     )
     parser.add_argument(
