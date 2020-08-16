@@ -1,6 +1,7 @@
 # Outr stuff
 images
-data
+data/images
+data/test
 *.pt
 
 # Byte-compiled / optimized / DLL files
