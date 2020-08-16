@@ -4,28 +4,25 @@
 
 This project consists in classifying a huge dataset of mushrooms. 
 The dataset comes from the [FGCVx Fungi Classification Challenge dataset](https://www.kaggle.com/c/fungi-challenge-fgvc-2018/overview) 
-and can be downloaded at [this address](https://github.com/visipedia/fgvcx_fungi_comp#data)
+and the links to download it may be found in [this repo](https://github.com/visipedia/fgvcx_fungi_comp#data).
 
 
 ## Set up
 
 The different packages needed are listed in the file `environment.yml` and can be installed with the following instructions: 
 
-OS X & Linux:
-
 ```sh
-npm install my-crazy-module --save
+conda env create -f environment.yml
 ```
 
-Windows:
-
-```sh
-edit autoexec.bat
-```
+NOTE: this will create and environment called 'mushroom_classification'.
 
 ## Usage 
 
+The entrypoint for training and testing is `main.py`.
+
 ### Train with the default parameters
+
 The dataset with the different classes of mushrooms has to be in the folder `data/images/`.
 The JSON file containing the annotation information should be in `data/`
 
