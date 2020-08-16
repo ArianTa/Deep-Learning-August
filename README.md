@@ -3,6 +3,8 @@
 > Project for the INFO8010-1 course.
 
 This project consists in classifying a huge dataset of mushrooms. 
+The dataset comes from the [FGCVx Fungi Classification Challenge dataset](https://www.kaggle.com/c/fungi-challenge-fgvc-2018/overview) 
+and can be downloaded at [this address](https://github.com/visipedia/fgvcx_fungi_comp#data)
 
 
 ## Set up
@@ -24,6 +26,8 @@ edit autoexec.bat
 ## Usage 
 
 ### Train with the default parameters
+The dataset with the different classes of mushrooms has to be in the folder `data/images/`.
+The JSON file containing the annotation information should be in `data/`
 
 Please run
 ```sh
@@ -33,12 +37,31 @@ Please run
 ### Train with other parameters
 
 This is a list that contains all the different parameters that can be used.
-- debugging : `--debug`;
-- Path of the data: `--data_path`;
-
-
-
-
+- `--debug`: print debug information
+- `--data_path`: path to root directory of the dataset
+- `--json_path`: path to JSON annotation file
+- `--mode`: specify whether we want to train or test the model
+- `--gpu`: whether or not we want to use the gpu
+- `--workers`: set the number of workers for dataloaders
+- `--batch`: specify the batch size
+- `--epochs`: specify the number of epochs
+- `--model`: specify the CNN model to be used
+- `--optimizer`: specify the optimizer to be used. default: SGD
+- `--criterion`: specify the criterion to be used. default: CrossEntropyLoss
+- `-- scheduler`: specify the scheduler to be used. default: OneCycleLR
+- `--save`: specify under which name the weights should be saved. default:model_weights.pt
+- `--lr`: specify the value of the starting learning rate. default 10e-3
+- `--valid_ratio`: specify the ratio between the train set and validation set. default: 0.90
+- `--seed`: specify a seed, for reproducability. default 1234
+- `--transforms`: the pytorch transforms to be used. default: imagenet_transforms
+- `--load`: specify  a path for a checkpoint
+- `--find_lr`: find the starting learning rate, if set, --lr becomes the lowest learning rate considered
+- `--no_bias`: the highest learning rate considered if --flind_lr is set. default 10
+- `--lr_decay`: use decaying learning rate
+- `--momentum`: specify the value of the momentum to be used. default 0.9
+- `--wdecay`: specify the value of the weight decay. default 5e-4
+- `--nesterov`: specify whether or not to use the nesterov momentum. 
+- `--save_log`: specify where to save  the results. default `results/`
 
 
 
