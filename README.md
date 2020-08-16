@@ -61,7 +61,30 @@ This is a list that contains all the different parameters that can be used.
 - `--nesterov`: specify whether or not to use the nesterov momentum. 
 - `--save_log`: specify where to save  the results. The default is set to `results/`
 
+The different models that are supported are listed in the table below.
 
+| Models | Command | ||
+| --- | --- | --- | --- | 
+|**AlexNet**| `alexnet` | | 
+|**DenseNet**| `densenet` ?????| |
+|**GoogLeNet**| `googlenet`| | 
+|**MobileNet** | `mobilenet_v2`|  | 
+|**ResNet**|`resnet18`|`resnet34`|`resnet50`|
+| | `resnet101`|`resnet152` |  
+|**ShuffleNet**| `shufflenet_v2_x0_5`| `shufflenet_v2_x1_0`|  
+| | `shufflenet_v2_x1_5`|`shufflenet_v2_x2_0`|
+|**VGG**| `vgg11`| `vgg13`|
+||`vgg16`|`vgg19`|
+
+|Optimizer|Command|
+| --- | --- |
+|**AdaDelta**|`Adadelta`|
+|**AdaGrad**| `Adagrad`| 
+|**Adam**| `Adam`|
+|**AdaBound**| `Adabound`|
+|**DiffGrad**|`DiffGrad`|
+|**RMSprop**|`RMSprop`|
+|**SGD**| `SGD`|
 
 
 Please add the parameter with the value picked 
