@@ -1,6 +1,6 @@
 # Mushroom Classification
 
-> Project for the INFO8010-1 course of the Uliege University under the supervision of Professor Louppe.
+> Project for the INFO8010-1 course of the ULiege University under the supervision of Professor Louppe.
 
 This project consists in classifying a huge dataset of mushrooms. 
 The dataset comes from the [FGCVx Fungi Classification Challenge dataset](https://www.kaggle.com/c/fungi-challenge-fgvc-2018/overview) 
@@ -11,7 +11,7 @@ and links to download it may be found in [this repository](https://github.com/vi
 
 Make sure you have an anaconda installation working on your machine.
 
-The different packages needed are listed in the file `environment.yml` and can be installed with the following instructions: 
+The different packages needed are listed in the file `environment.yml` which can be used to create a new environment with the following instructions: 
 
 ```sh
 conda env create -f environment.yml
