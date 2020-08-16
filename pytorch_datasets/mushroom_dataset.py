@@ -15,44 +15,51 @@ from torchvision import (
 )
 import glob
 from PIL import Image
+import json
 
 
 class MushroomDataset(Dataset):
     def __init__(
-        self, root, transform=None,
+        self, root, annotation, transform=None,
     ):
         """
         Args:
             root (string): Path to the root dir of the dataset.
+            annotation (string): Path to json annotation file
             transform (callable, optional): Optional transform to appy.
         """
-        self.root = root
         self.transform = transform
-        self.superclasses = set()
-        self.subclasses = set()
-        self.classes = set()
+        self.root = root
+        with open(annotation) as json_file:
+            self.annotation = json.load(json_file)
 
-        # Create the dictionary
-        self.dico = dict()
+        categories = self.annotation["categories"]
+        self.classes = [None] * len(categories)
+        self.superclasses = [None] * len(categories)
+        self.subclasses = [None] * len(categories)
 
-        idx = 0
-        dir_list = os.listdir(root)
-        for direct in dir_list:
-            class_path = os.path.join(root, direct,)
-            self.superclasses.add(direct.split("_")[0])
-            self.subclasses.add(direct.split("_")[1])
-            self.classes.add(direct)
-            img_path_list = glob.glob(class_path + "/*")
-            for img_path in img_path_list:
-                self.dico[idx] = img_path
-                idx += 1
+        for i in range(len(categories)):
+            klass_id = categories[i]['id']
+            klass = categories[i]['name']
+            superclass = categories[i]['supercategory']
+            subclass = klass.split()[1]
+
+            self.classes[klass_id] = klass
+            self.superclasses[klass_id] = superclass
+            self.subclasses[klass_id] = subclass
+
 
     def __len__(self,):
         """
         Returns:
             then number of images in the dataset
         """
-        return len(self.dico)
+        return len(self.annotation["annotations"])
+
+    def get_category(idx):
+        """
+        """
+        return self.annotation['categories'][idx]['name']
 
     def __getitem__(
         self, idx,
@@ -66,22 +73,22 @@ class MushroomDataset(Dataset):
                 -"superclass": its superclass
                 -"subclass": its subclass
         """
+
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        image = io.imread(self.dico[idx])
-        image = Image.fromarray(image)
+        category = self.annotation['annotations'][idx]['category_id']
 
-        direct = self.dico[idx].split("/")[-2]
+        path = self.annotation['images'][idx]['file_name'].replace(
+            " ", "_").replace(
+            ".", "_").replace(
+            ":", "_")
+        path = list(path)
+        path[-4] = "."
+        path = "".join(path)
 
-        sample = {
-            "image": image,
-            "superclass": direct.split("_")[0],
-            "subclass": direct.split("_")[1],
-            "class": direct,
-        }
+        image = os.path.join(self.root, path)  # KEK
+        image = Image.open(image)
+        image = self.transform(image)
 
-        if self.transform:
-            sample["image"] = self.transform(sample["image"])
-
-        return sample
+        return image, category

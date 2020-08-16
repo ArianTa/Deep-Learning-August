@@ -163,7 +163,7 @@ class DenseNet(nn.Module):
 
 
 def get_densenet_model(
-    model_name, learning_rate, output_dim,
+    model_name, output_dim,
 ):
     """ Helper function
     """
@@ -217,14 +217,5 @@ def get_densenet_model(
     pretrained_model.classifier = final_fc
 
     model.load_state_dict(pretrained_model.state_dict())
-    """
-    params = [
-        {"params": model.conv1.parameters(), "lr": learning_rate / 2},
-        {"params": model.fc.parameters()},
-    ]
-    """
 
-    return (
-        model,
-        model.parameters(),
-    )
+    return model

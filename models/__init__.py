@@ -5,4 +5,4 @@ from .densenet import *
 from .googlenet import *
 from .shufflenetV2 import *
 from .alexnet import *
-from .modelzzzzz import *
+from .misc import *

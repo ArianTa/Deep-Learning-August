@@ -149,3 +149,14 @@ def plot_lr_finder(
         True, "both", "x",
     )
     plt.show()
+
+
+def find_learning_rate(nb_iter=100, **kwargs):
+    globals().update(kwargs)
+    model.to(device)
+    criterion.to(device)
+    lr_finder = LRFinder(model, optimizer, criterion, device,)
+    (lrs, losses,) = lr_finder.range_test(iterator, end_lr,)
+    plot_lr_finder(
+        lrs, losses, skip_start=30, skip_end=30,
+    )

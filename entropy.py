@@ -3,6 +3,7 @@ from numpy import log
 import argparse
 import os
 
+
 def shannon_entropy(path):
     classes = os.listdir(path)
     # Counting the number of classes
@@ -17,7 +18,7 @@ def shannon_entropy(path):
         kls_path = os.path.join(path, kls)
         c = len(os.listdir(kls_path))
         p = c / n
-        H += - p * log(p) 
+        H += - p * log(p)
 
     return H / log(k)
 
@@ -34,5 +35,5 @@ if __name__ == "__main__":
     # Add more stuff here maybe ?
     args = parser.parse_args()
 
-    #Measure the balance of the dataset:
+    # Measure the balance of the dataset:
     print(f'shannon_entropy = {shannon_entropy(args.path)}')

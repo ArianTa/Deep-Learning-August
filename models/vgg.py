@@ -130,7 +130,7 @@ def make_vgg_layers(
 
 
 def get_vgg_model(
-    model_name, learning_rate, output_dim,
+    model_name, output_dim,
 ):
     """ Helper function
     """
@@ -168,7 +168,4 @@ def get_vgg_model(
 
     model.load_state_dict(pretrained_model.state_dict())
 
-    return (
-        model,
-        model.parameters(),
-    )
+    return model
