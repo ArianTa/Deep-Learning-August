@@ -7,7 +7,9 @@ The dataset comes from the [FGCVx Fungi Classification Challenge dataset](https:
 and links to download it may be found in [this repository](https://github.com/visipedia/fgvcx_fungi_comp#data).
 
 
-## Set up
+## Setup
+
+Make sure you have an anaconda installation working on your machine.
 
 The different packages needed are listed in the file `environment.yml` and can be installed with the following instructions: 
 
@@ -17,31 +19,35 @@ conda env create -f environment.yml
 
 NOTE: this will create and environment called 'mushroom_classification'.
 
+To activate the environment, run
+```sh
+conda activate mushroom_classification
+```
+
 ## Usage 
 
 The entrypoint for training and testing is `main.py`.
 
 ### Train with the default parameters
 
-By default, the script expects to have a `data` composed of the JSON files `train.json` and `test.json` as well as a `images` directory containing the dataset.
+By default, the script expects to have a `data` directory composed of the JSON files `train.json` and `test.json` as well as a `images` directory containing the dataset.
 
-To train the default model with the default parameters, run:
+To train the default model with the default parameters, run
 ```sh
 python main.py --gpu
 ```
-See the next section for details about the script's paramerts.
+See the next section for details about the script's parameters.
 
 ### Train with other parameters
 
 This is a list that contains all the different parameters that can be used.
-- `--debug`: print debug information
-- `--data_path`: path to root directory of the dataset. The default is set to `data/`
-- `--json_path`: path to JSON annotation file. The default is set to `data/`
-- `--mode`: specify whether we want to train or test the model
-	- The command `train` and `test` are accepted
-- `--gpu`: whether or not we want to use the gpu
-- `--workers`: set the number of workers for dataloaders. The default is set to 2
-- `--batch`: specify the batch size. The default is set to 32
+- `--debug`: print debug information when this parameter is specified
+- `--data_path`: specify the path to root directory of the dataset. The default is set to `data/`
+- `--json_path`: specify the path to JSON annotation file. The default is set to `data/train.json`
+- `--mode`: specify in which mode the script is to be run: `train` or `test`
+- `--gpu`: set this to use the gpu
+- `--workers`: set the number of workers for dataloaders. The default is set to `2`
+- `--batch`: specify the batch size. The default is set to `32`
 - `--epochs`: specify the number of epochs. The default value is set to 10
 - `--model`: specify the CNN model to be used. The default is set to `resnet152`. The different possible models are listed in the table below.
 - `--optimizer`: specify the optimizer to be used. The default is set to `SGD`. The different possible models are listed in the table below.
