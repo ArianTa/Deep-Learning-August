@@ -1,7 +1,8 @@
 # Mushroom Classification
 
 > Project for the INFO8010-1 course.
-This project consists in classifying a huge dataset of mushrooms.
+
+This project consists in classifying a huge dataset of mushrooms. 
 
 
 ## Set up
@@ -20,20 +21,36 @@ Windows:
 edit autoexec.bat
 ```
 
-## Usage example
+## Usage 
 
-A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
+### Train with the default parameters
 
-_For more examples and usage, please refer to the [Wiki][wiki]._
-
-## Development setup
-
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
-
+Please run
 ```sh
-make install
-npm test
+
 ```
+
+### Train with other parameters
+
+This is a list that contains all the different parameters that can be used.
+- debugging : `--debug`;
+- Path of the data: `--data_path`;
+
+
+
+
+
+
+
+
+Please add the parameter with the value picked 
+
+The code can be run with the different parameters tested.
+
+Please choose your optimizer from the 
+
+## Test
+
 
 ## Meta
 
@@ -43,13 +60,6 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 
 [https://github.com/yourname/github-link](https://github.com/dbader/)
 
-## Contributing
-
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
 
 <!-- Markdown link & img dfn's -->
 [npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
