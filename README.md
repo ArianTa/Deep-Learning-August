@@ -71,6 +71,10 @@ Please choose your optimizer from the
 
 ## Test
 
+Our final model may be trained with the following command
+```sh
+
+```
 
 ## Meta
 
