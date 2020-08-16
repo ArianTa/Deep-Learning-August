@@ -68,7 +68,7 @@ def get_predictions(model, iterator):
 
 
 def save_confusion_matrix(labels, pred_labels, classes):
-    """ Saves the confusion matrix in the 'confuision_matrix.png' file
+    """ Saves the confusion matrix in the 'results/confuision_matrix.png' file
 
     :param labels: A list of the actual labels of the examples
     :type labels: List
@@ -92,11 +92,11 @@ def save_confusion_matrix(labels, pred_labels, classes):
     plt.xticks(rotation=90)
     plt.xlabel('Predicted Label', fontsize=50)
     plt.ylabel('True Label', fontsize=50)
-    plt.savefig('confusion_matrix.png', dpi=100)
+    plt.savefig('results/confusion_matrix.png', dpi=100)
 
 
 def save_most_incorrect(incorrect, classes, n_images, normalize=True):
-    """ Saves the most incorrect predictions in the 'most_incorrect.png' file
+    """ Saves the most incorrect predictions in the 'results/most_incorrect.png' file
     
     :param incorrect: A list of tuples (images, actual labels of the images, predicted probabilities)
     :type incorrect: List
@@ -135,11 +135,11 @@ def save_most_incorrect(incorrect, classes, n_images, normalize=True):
         ax.axis('off')
 
     fig.subplots_adjust(hspace=0.4)
-    plt.savefig('most_incorrect.png')
+    plt.savefig('results/most_incorrect.png')
 
 
 def save_filtered_images(images, filters, n_filters=None, normalize=True):
-    """ Saves filtered images in the 'filtered_image.png' file
+    """ Saves filtered images in the 'results/filtered_image.png' file
     
     :param images: A tensor consisting in the images to plot
     :type images: torch.Tensor
@@ -190,10 +190,10 @@ def save_filtered_images(images, filters, n_filters=None, normalize=True):
             ax.axis('off')
 
     fig.subplots_adjust(hspace=-0.7)
-    plt.savefig('filtered_image.png')
+    plt.savefig('results/filtered_image.png')
 
 def save_filters(filters, normalize=True):
-    """ Saves filters in the 'filters.png' file
+    """ Saves filters in the 'results/filters.png' file
     
     :param filters: A tensor consisting in the filters to apply to the images
     :type filters: torch.Tensor
@@ -223,15 +223,15 @@ def save_filters(filters, normalize=True):
         ax.axis('off')
 
     fig.subplots_adjust(wspace=-0.9)
-    plt.savefig('filters.png')
+    plt.savefig('results/filters.png')
 
 def test(**kwargs):
     """ Tests a ResNet152 the model on a dataset.
     Saves multiple images:
-        - 'filters.png': The filters of the first layer
-        - 'filtered_image.png': The first 7 layers applid on randomly drawn images
-        - 'confusion_matrix.png': The confusion matrix
-        - 'most_incorrect.png': The most incorrect precisions
+        - 'results/filters.png': The filters of the first layer
+        - 'results/filtered_image.png': The first 7 layers applid on randomly drawn images
+        - 'results/confusion_matrix.png': The confusion matrix
+        - 'results/most_incorrect.png': The most incorrect precisions
     
     :param model: A ResNet model
     :type model: models.ResNet
