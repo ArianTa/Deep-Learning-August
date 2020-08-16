@@ -4,7 +4,7 @@
 
 This project consists in classifying a huge dataset of mushrooms. 
 The dataset comes from the [FGCVx Fungi Classification Challenge dataset](https://www.kaggle.com/c/fungi-challenge-fgvc-2018/overview) 
-and the links to download it may be found in [this repo](https://github.com/visipedia/fgvcx_fungi_comp#data).
+and links to download it may be found in [this repository](https://github.com/visipedia/fgvcx_fungi_comp#data).
 
 
 ## Set up
@@ -71,11 +71,20 @@ Please choose your optimizer from the
 
 ## Test
 
-Our final model may be trained with the following command
+Our final model may be trained with the following command:
 ```sh
-
+python main.py --gpu \
+	--workers 4 \
+	--batch 32 \
+	--epoch 100 \
+	--model resnet152 \
+	--optimizer SGD \
+	--scheduler OneCycleLR \
+	--wdecay 0.0005 \
+	--no_bias \
+	--nesterov
 ```
-
+The tensorboard logs and the weights of the model will be saved in the `results` directory.
 ## Meta
 
 Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@example.com
