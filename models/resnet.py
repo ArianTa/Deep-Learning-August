@@ -235,7 +235,15 @@ class BasicBlock(nn.Module):
 def get_resnet_model(
     model_name, output_dim
 ):
-    """ Helper function
+    """ Helper function to get a model
+
+    :param model_name: Name of the model
+    :type model_name: str
+    :param output_dim: Output dimension of the model
+    :type output_dim: int
+
+    :return model: The model
+    :rtype: ResNet
     """
     # Getting the model
     if model_name == "resnet18":

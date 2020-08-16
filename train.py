@@ -15,6 +15,28 @@ from utils import *
 def train_epoch(
     model, iterator, optimizer, criterion, scheduler, device
 ):
+    """ Trains the model on a single epoch
+
+    :param model: A NN model
+    :type model: torch.nn.module
+    :param iterator: A dataloader
+    :type iterator: torch.utils.data.Datalodaer
+    :param optimizer: A torch optimizer
+    :type optimizer: torch.optim.Optimizer
+    :param criterion: A loss criterion
+    :type criterion: torch.nn.module
+    :param scheduler: A learning rate scheduler
+    :type scheduler: _LRScheduler
+    :param device: The device on which the operations will be done
+    :type device: torch.device
+
+    :return epoch_loss: The average training loss of the epoch
+    :rtype epoch_loss: float
+    :return epoch_acc_1: The average top1 training accuracy of the epoch
+    :rtype epoch_acc_1: float
+    :return epoch_acc_5: The average top5 training accuracy of the epoch
+    :rtype epoch_acc_5: float
+    """
 
     epoch_loss = 0
     epoch_acc_1 = 0
@@ -97,7 +119,24 @@ def train_epoch(
 def evaluate(
     model, iterator, criterion, device,
 ):
+    """ Evaluates a model on a dataset for a single epoch
 
+    :param model: A NN model
+    :type model: torch.nn.module
+    :param iterator: A dataloader
+    :type iterator: torch.utils.data.Datalodaer
+    :param criterion: A loss criterion
+    :type criterion: torch.nn.module
+    :param device: The device on which the operations will be done
+    :type device: torch.device
+
+    :return epoch_loss: The average training loss of the epoch
+    :rtype epoch_loss: float
+    :return epoch_acc_1: The average top1 training accuracy of the epoch
+    :rtype epoch_acc_1: float
+    :return epoch_acc_5: The average top5 training accuracy of the epoch
+    :rtype epoch_acc_5: float
+    """
     epoch_loss = 0
     epoch_acc_1 = 0
     epoch_acc_5 = 0
@@ -138,6 +177,18 @@ def evaluate(
 def epoch_time(
     start_time, end_time,
 ):
+    """ Measures the time taken for a single epoch
+
+    :param start_time: The time at which the epoch started
+    :type start_time: int
+    :param end_time: The time at which the epoch ended
+    :type end_time: int
+
+    :return elapsed_mins: Elapsed minutes
+    :rtype elapsed_mins: int
+    :return elapsed_secs: Elapsed seconds
+    :rtype elapsed_secs: int
+    """
     elapsed_time = end_time - start_time
     elapsed_mins = int(elapsed_time / 60)
     elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
@@ -148,8 +199,38 @@ def epoch_time(
 
 
 def train(**kwargs):
-    globals().update(kwargs)
+    """ Trains the model
 
+    :param model: A NN model
+    :type model: torch.nn.module
+    :param start_epoch: The starting epoch
+    :type start_epoch: int
+    :param epochs: The total number of epochs to be done. (epochs - start_epoch) gives the actual number of epochs.
+    :type epochs: int
+    :param train_iterator: A dataloader for the training set
+    :type train_iterator: torch.utils.data.Datalodaer
+    :param valid_iterator: A dataloader for the validation set
+    :type valid_iterator: torch.utils.data.Datalodaer
+    :param optimizer: A torch optimizer
+    :type optimizer: torch.optim.Optimizer
+    :param criterion: A loss criterion
+    :type criterion: torch.nn.module
+    :param scheduler: A learning rate scheduler
+    :type scheduler: _LRScheduler
+    :param device: The device on which the operations will be done
+    :type device: torch.device
+    :param file_name: Name of the file to save the weights in
+    :type file_name: str
+    :param writer: Tensorboard writer
+    :type writer: torch.utils.tensorboard.SummaryWriter
+    :param DEBUG: Print debug information or not
+    :type DEBUG: bool
+
+
+    :rtype: None
+    """
+
+    globals().update(kwargs)
     if DEBUG:
         print(
             f"The model has {count_parameters(model):,} trainable parameters"

@@ -18,10 +18,10 @@ def measure_time(label,):
     >>> with measure_time('Heavy computation'):
     >>>     do_heavy_computation()
     'Duration of [Heavy computation]: 0:04:07.765971'
-    Parameters
-    ----------
-    label: str
-        The label by which the computation will be referred
+
+    
+    :param label: The label by which the computation will be referred
+    :type label: str
     """
     print("{}...".format(label))
     start = time.time()
@@ -33,25 +33,23 @@ def measure_time(label,):
         )
     )
 
-
-class dummy_context_mgr:
-    def __enter__(self,):
-        return None
-
-    def __exit__(
-        self, exc_type, exc_value, traceback,
-    ):
-        return False
-
-
-def format_label(label,):
-    # label = label.split("_")[1]  # takes only the superclass
-    return label
-
-
 def calculate_topk_accuracy(
     y_pred, y, k=5,
 ):
+    """ Computes the top1 and topk accuracy
+
+    :param y_pred: Tensor containing the predictions of the model
+    :type y_pred: torch.Tensor
+    :param y: Tensor containing the actual labels
+    :type y: torch.Tensor
+    :param k: Parameter describing which top accuracy is to be computed (e.g, for k = 5, the top5 accuracy is computed)
+    :type k: int
+
+    :return acc_1: Top1 accuracy
+    :type acc_1: float
+    :return acc_5: Top5 accuracy
+    :type acc_5: float
+    """
     with torch.no_grad():
         batch_size = y.shape[0]
         (_, top_pred,) = y_pred.topk(k, 1,)
@@ -70,6 +68,15 @@ def calculate_topk_accuracy(
 def show_img(
     dataset, n_images=25,
 ):
+    """ Show images by drawning them from a dataset
+
+    :param dataset: The dataset from which the images will be drawn
+    :type dataset: torch.utils.data.Dataset
+    :param n_images: Number of images to plot
+    :type n_images: int
+
+    :rtype: None
+    """
     (images, labels,) = zip(
         *[
             (image, label,)
@@ -77,7 +84,7 @@ def show_img(
         ]
     )
 
-    dataset.classes = [format_label(c) for c in dataset.classes]
+    dataset.classes = dataset.classes
     classes = dataset.classes
     plot_images(
         images, labels, classes,
@@ -85,6 +92,14 @@ def show_img(
 
 
 def normalize_image(image,):
+    """ Normalizes and image
+    
+    :param image: The image to normalize
+    :type image: numpy.array
+
+    :rtype: None
+    """
+
     image_min = image.min()
     image_max = image.max()
     image.clamp_(
@@ -97,6 +112,19 @@ def normalize_image(image,):
 def plot_images(
     images, labels, classes, normalize=True,
 ):
+    """ Plot images
+
+    :param images: Tensor consisting in the images to plot
+    :type images: torch.Tensor
+    :param labels: Tensor consisting in the images' labels
+    :type labels: torch.Tensor
+    :param classes: A list of the classes of the images
+    :type classes: List
+    :param normalize: Whether to normalize the images or not
+    :type normalize: bool
+    
+    :rtype: None
+    """
     n_images = len(images)
 
     rows = int(np.sqrt(n_images))
@@ -120,41 +148,15 @@ def plot_images(
     plt.show()
 
 
-def split_weights(net):
-    """split network weights into to categlories,
-    one are weights in conv layer and linear layer,
-    others are other learnable paramters(conv bias,
-    bn weights, bn bias, linear bias)
-    Args:
-        net: network architecture
-
-    Returns:
-        a dictionary of params splite into to categlories
-    """
-
-    decay = []
-    no_decay = []
-
-    for m in net.modules():
-        if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-            decay.append(m.weight)
-
-            if m.bias is not None:
-                no_decay.append(m.bias)
-
-        else:
-            if hasattr(m, 'weight'):
-                no_decay.append(m.weight)
-            if hasattr(m, 'bias'):
-                no_decay.append(m.bias)
-
-    assert len(list(net.parameters())) == len(decay) + len(no_decay)
-
-    return [dict(params=decay), dict(params=no_decay, weight_decay=0)]
-
-
 def get_model(args):
+    """ Helper function to get the model
 
+    :param args: A namespace containing the different parameters of the session
+    :type args: argparse.Namespace
+
+    :return model: A model
+    :rtype model: torch.nn.Module 
+    """
     output_dim = len(os.listdir(os.path.join(args.data_path, "images")))
     if "resnet" in args.model:
         model = get_resnet_model(args.model, output_dim)
@@ -177,7 +179,15 @@ def get_model(args):
 
 
 def get_params(resnet, args):
-    """
+    """ Helper function to get the parameters to train for a ResNet model
+
+    :param resnet: The model to get the parameters from
+    :type resnet: models.ResNet    
+    :param args: A namespace containing the different hyper parameters for trainable parameters
+    :type args: argparse.Namespace
+
+    :return params: A list containing the parameters to be trained
+    :rtype params: List
     """
     assert isinstance(resnet, ResNet)
     base_lr = args.lr
@@ -238,9 +248,28 @@ def get_params(resnet, args):
     return params
 
 def get_criterion(args):
+    """ Wrapper around nn.CrossEntropyLoss.
+    This was meant to be an helper function to choose between different criterion
+    
+    :param args: A namespace containing the different hyper parameters for the criterion
+    :type args: argparse.Namespace
+
+    :return: An CrossEntropyLoss criterion
+    :rtype: nn.CrossEntropyLoss
+    """
     return nn.CrossEntropyLoss()
 
 def get_optimizer(params, args):
+    """ Helper fucntion to get the optimizer
+
+    :param params: A list containing the parameters to be trained
+    :type params: List
+    :param args: A namespace containing the different hyper parameters for the optimizers
+    :type args: argparse.Namespace
+
+    :return: An optimizer
+    :rtype: torch.optim.Optimizer
+    """
     if args.optimizer == "SGD":
         return optim.SGD(
                 params, lr=args.lr, momentum=args.momentum, weight_decay=args.wdecay, nesterov=args.nesterov

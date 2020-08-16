@@ -295,7 +295,15 @@ class BasicConv2d(nn.Module):
 def get_googlenet_model(
     output_dim,
 ):
-    """ Helper function
+    """ Helper function to get a model
+
+    :param model_name: Name of the model
+    :type model_name: str
+    :param output_dim: Output dimension of the model
+    :type output_dim: int
+
+    :return model: The model
+    :rtype: GoogLeNet
     """
     # Getting the model
     model = GoogLeNet(

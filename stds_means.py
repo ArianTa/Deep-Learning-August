@@ -4,9 +4,17 @@ import argparse
 import torchvision.datasets as datasets
 
 
-def stds_means(data_dir,):
+def stds_means(path):
+    """ Computs the stds and means pf dataset
+    
+    :param path: Path to the dataset
+    :type path: str
+
+    :rtype: None
+    """
+
     train_data = datasets.ImageFolder(
-        root=data_dir, transform=transforms.ToTensor(),
+        root=path, transform=transforms.ToTensor(),
     )
 
     means = torch.zeros(3)

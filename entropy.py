@@ -5,6 +5,14 @@ import os
 
 
 def shannon_entropy(path):
+    """ Computes the shannon entropy of a given dataset
+
+    :param path: Path to the dataset
+    :type path: str
+
+    :rtype: None
+    """
+
     classes = os.listdir(path)
     # Counting the number of classes
     n = 0

@@ -132,7 +132,15 @@ def make_vgg_layers(
 def get_vgg_model(
     model_name, output_dim,
 ):
-    """ Helper function
+    """ Helper function to get a model
+
+    :param model_name: Name of the model
+    :type model_name: str
+    :param output_dim: Output dimension of the model
+    :type output_dim: int
+
+    :return model: The model
+    :rtype: VGG
     """
     # Getting the model
     if "vgg11" in model_name:

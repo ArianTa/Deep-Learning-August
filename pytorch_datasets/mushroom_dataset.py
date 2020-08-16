@@ -22,12 +22,19 @@ class MushroomDataset(Dataset):
     def __init__(
         self, root, annotation, transform=None,
     ):
+        """ Contrstructor for the MushroomDataset class
+
+        :param root: Path to the root dir of the dataset.
+        :type root: str
+        :param annotation: Path to json annotation file
+        :type annotation: str
+        :param transform: Transform to apply
+        :type transform: Callable
+
+        :return model: The mushroom dataset
+        :rtype: MushroomDataset
         """
-        Args:
-            root (string): Path to the root dir of the dataset.
-            annotation (string): Path to json annotation file
-            transform (callable, optional): Optional transform to appy.
-        """
+
         self.transform = transform
         self.root = root
         with open(annotation) as json_file:
@@ -50,28 +57,34 @@ class MushroomDataset(Dataset):
 
 
     def __len__(self,):
-        """
-        Returns:
-            then number of images in the dataset
+        """ Returns the length of the dataset
+
+        :rtype: int
         """
         return len(self.annotation["annotations"])
 
     def get_category(idx):
-        """
+        """ Returns the category of a object given given its index
+        
+        :param idx: Index of the object in the dataset
+        :type idx: int
+
+        :rtype: str
         """
         return self.annotation['categories'][idx]['name']
 
     def __getitem__(
         self, idx,
     ):
-        """
-        Args:
-            idx (integer): Index of the queried image
-        Returns:
-            dictionary containing 3 entries:
-                -"image": the image
-                -"superclass": its superclass
-                -"subclass": its subclass
+        """ Contrstructor for the MushroomDataset class
+
+        :param idx: Index of the queried image
+        :type idx: 
+
+        :return image: The transformed image
+        :rtype image: torch.Tensor
+        :return category: The category index of the image
+        :rtype category: int
         """
 
         if torch.is_tensor(idx):

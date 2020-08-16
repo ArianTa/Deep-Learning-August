@@ -1,5 +1,11 @@
+"""
+This file contains the imagenet tansforms with an added random erasing
+"""
 
 import torchvision.transforms as transforms
+
+
+
 
 size = 224
 means = [0.485, 0.456, 0.406]

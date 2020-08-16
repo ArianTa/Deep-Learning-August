@@ -4,7 +4,12 @@ import argparse
 
 
 def rename(path):
-    """
+    """ Replaces the spaces, the dots and the colons with undersccores of a file or a directory (recursively)
+
+    :param path: Path to the dataset
+    :type path: str
+
+    :rtype: None
     """
     new_path = path.replace(" ", "_").replace(".", "_").replace(":", "_")
     os.rename(path, new_path)

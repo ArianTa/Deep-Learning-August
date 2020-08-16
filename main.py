@@ -205,6 +205,7 @@ if __name__ == "__main__":
         "pytorch_transforms." + args.transforms + ".test_transforms"
     )
 
+    # Dataset
     dataset = MushroomDataset(
         root=args.data_path,
         annotation=args.json_path,
@@ -212,7 +213,6 @@ if __name__ == "__main__":
 
     # Scheduler - can't be inferred from args alone
     total_steps = int(args.epochs * math.ceil(len(dataset) / args.batch) * args.valid_ratio)
-    print(total_steps)
     max_lrs = [p["lr"] for p in optimizer.param_groups]
 
     if args.scheduler == "OneCycleLR":
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     else:
         start_epoch = 0
 
-
+    # This dictionary will contain all the arguments to be given to the train or test functions
     meta_data = dict(
         DEBUG = True if args.debug else False,
         device = device,

@@ -17,7 +17,15 @@ import json
 
 
 def get_predictions(model, iterator):
+    """ Gets the predictions of a model
 
+    :param model: A NN model
+    :type model: torch.nn.module
+    :param iterator: A dataloader
+    :type iterator: torch.utils.data.Datalodaer
+-   
+    :rtype: None
+    """
     model.eval()
 
     test_acc_1 = 0
@@ -59,7 +67,19 @@ def get_predictions(model, iterator):
 
 
 
-def plot_confusion_matrix(labels, pred_labels, classes):
+def save_confusion_matrix(labels, pred_labels, classes):
+    """ Saves the confusion matrix in the 'confuision_matrix.png' file
+
+    :param labels: A list of the actual labels of the examples
+    :type labels: List
+    :param pred_labels: A list of the predicted labels of the examples
+    :type pred_labels: List
+    :param classes: A list of the classes of the dataset
+    :type classes: List
+
+    :rtype: None
+    """
+
 
     fig = plt.figure(figsize=(250, 250))
     ax = fig.add_subplot(1, 1, 1)
@@ -72,10 +92,23 @@ def plot_confusion_matrix(labels, pred_labels, classes):
     plt.xticks(rotation=90)
     plt.xlabel('Predicted Label', fontsize=50)
     plt.ylabel('True Label', fontsize=50)
-    plt.savefig('results/confusion_matrix.png', dpi=100)
+    plt.savefig('confusion_matrix.png', dpi=100)
 
 
-def plot_most_incorrect(incorrect, classes, n_images, normalize=True):
+def save_most_incorrect(incorrect, classes, n_images, normalize=True):
+    """ Saves the most incorrect predictions in the 'most_incorrect.png' file
+    
+    :param incorrect: A list of tuples (images, actual labels of the images, predicted probabilities)
+    :type incorrect: List
+    :param classes: A list of the classes of the dataset
+    :type classes: List
+    :param n_images: Number of images to plot
+    :type n_images: int
+    :param normalize: Whether to normalize the images or not
+    :type normalize: bool
+
+    :rtype: None
+    """
 
     rows = int(np.sqrt(n_images))
     cols = int(np.sqrt(n_images))
@@ -102,66 +135,23 @@ def plot_most_incorrect(incorrect, classes, n_images, normalize=True):
         ax.axis('off')
 
     fig.subplots_adjust(hspace=0.4)
-    plt.savefig('results/most_incorrect.png')
-
-def get_representations(model, iterator):
-
-    model.eval()
-
-    outputs = []
-    intermediates = []
-    labels = []
-
-    with torch.no_grad():
-
-        for (x, y) in iterator:
-
-            x = x.to(device)
-
-            y_pred, _ = model(x)
-
-            outputs.append(y_pred.cpu())
-            labels.append(y)
-
-    outputs = torch.cat(outputs, dim=0)
-    labels = torch.cat(labels, dim=0)
-
-    return outputs, labels
+    plt.savefig('most_incorrect.png')
 
 
-def get_pca(data, n_components=2):
-    pca = decomposition.PCA()
-    pca.n_components = n_components
-    pca_data = pca.fit_transform(data)
-    return pca_data
+def save_filtered_images(images, filters, n_filters=None, normalize=True):
+    """ Saves filtered images in the 'filtered_image.png' file
+    
+    :param images: A tensor consisting in the images to plot
+    :type images: torch.Tensor
+    :param filters: A tensor consisting in the filters to apply to the images
+    :type filters: torch.Tensor
+    :param n_filters: The number of filters to apply to the images
+    :type n_filters: int
+    :param normalize: Whether to normalize the images or not
+    :type normalize: bool
 
-
-def plot_representations(data, labels, classes, n_images=None):
-
-    if n_images is not None:
-        data = data[:n_images]
-        labels = labels[:n_images]
-
-    fig = plt.figure(figsize=(15, 15))
-    ax = fig.add_subplot(111)
-    scatter = ax.scatter(data[:, 0], data[:, 1], c=labels, cmap='hsv')
-    plt.savefig('results/representation.png')
-    #handles, _ = scatter.legend_elements(num = None)
-    #legend = plt.legend(handles = handles, labels = classes)
-
-
-def get_tsne(data, n_components=2, n_images=None):
-
-    if n_images is not None:
-        data = data[:n_images]
-
-    tsne = manifold.TSNE(n_components=n_components, random_state=0)
-    tsne_data = tsne.fit_transform(data)
-    return tsne_data
-
-
-def plot_filtered_images(images, filters, n_filters=None, normalize=True):
-
+    :rtype: None
+    """
     images = torch.cat([i.unsqueeze(0) for i in images], dim=0).cpu()
     filters = filters.cpu()
 
@@ -200,10 +190,18 @@ def plot_filtered_images(images, filters, n_filters=None, normalize=True):
             ax.axis('off')
 
     fig.subplots_adjust(hspace=-0.7)
-    plt.savefig('results/filtered_image.png')
+    plt.savefig('filtered_image.png')
 
-def plot_filters(filters, normalize=True):
+def save_filters(filters, normalize=True):
+    """ Saves filters in the 'filters.png' file
+    
+    :param filters: A tensor consisting in the filters to apply to the images
+    :type filters: torch.Tensor
+    :param normalize: Whether to normalize the images or not
+    :type normalize: bool
 
+    :rtype: None
+    """
     filters = filters.cpu()
 
     n_filters = filters.shape[0]
@@ -225,9 +223,32 @@ def plot_filters(filters, normalize=True):
         ax.axis('off')
 
     fig.subplots_adjust(wspace=-0.9)
-    plt.savefig('results/filters.png')
+    plt.savefig('filters.png')
 
 def test(**kwargs):
+    """ Tests a ResNet152 the model on a dataset.
+    Saves multiple images:
+        - 'filters.png': The filters of the first layer
+        - 'filtered_image.png': The first 7 layers applid on randomly drawn images
+        - 'confusion_matrix.png': The confusion matrix
+        - 'most_incorrect.png': The most incorrect precisions
+    
+    :param model: A ResNet model
+    :type model: models.ResNet
+    :param test_iterator: A dataloader for the testing set
+    :type test_iterator: torch.utils.data.Datalodaer
+    :param device: The device on which the operations will be done
+    :type device: torch.device
+    :param classes: A list of all the classes
+    :type classes: List
+    :param writer: Tensorboard writer (not used as of now)
+    :type writer: torch.utils.tensorboard.SummaryWriter
+    :param DEBUG: Print debug information or not
+    :type DEBUG: bool
+
+    :rtype: None
+    """
+
     globals().update(kwargs)
 
     with measure_time("Getting predictions"):
@@ -236,7 +257,7 @@ def test(**kwargs):
     pred_labels = torch.argmax(probs, 1)
 
     with measure_time("Big confusion matrix"):
-        plot_confusion_matrix(labels, pred_labels, classes)
+        save_confusion_matrix(labels, pred_labels, classes)
 
     print(f"Test Acc @1: {acc_1*100:6.2f}% | Test Acc @5: {acc_5*100:6.2f}%")
 
@@ -252,12 +273,12 @@ def test(**kwargs):
 
     N_IMAGES = 36
 
-    plot_most_incorrect(incorrect_examples, classes, N_IMAGES)
+    save_most_incorrect(incorrect_examples, classes, N_IMAGES)
 
     outputs, labels = get_representations(model, test_iterator)
 
     output_pca_data = get_pca(outputs)
-    plot_representations(output_pca_data, labels, classes)
+    save_representations(output_pca_data, labels, classes)
 
     N_IMAGES = 5
     N_FILTERS = 7
@@ -265,7 +286,7 @@ def test(**kwargs):
     images = [image for image, label in [test_data[i] for i in range(N_IMAGES)]]
     filters = model.conv1.weight.data
 
-    plot_filtered_images(images, filters, N_FILTERS)
+    save_filtered_images(images, filters, N_FILTERS)
 
-    plot_filters(filters)
+    save_filters(filters)
 

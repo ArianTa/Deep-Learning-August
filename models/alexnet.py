@@ -43,7 +43,15 @@ class AlexNet(nn.Module):
 
 
 def get_alexnet_model(model_name, output_dim):
-    """ Helper function
+    """ Helper function to get a model
+
+    :param model_name: Name of the model
+    :type model_name: str
+    :param output_dim: Output dimension of the model
+    :type output_dim: int
+
+    :return model: The model
+    :rtype: AlexNet
     """
     # Getting the model
     model = AlexNet(output_dim)

@@ -1,3 +1,6 @@
+"""
+This file contains the imagenet tansforms
+"""
 
 import torchvision.transforms as transforms
 
