@@ -23,13 +23,13 @@ The entrypoint for training and testing is `main.py`.
 
 ### Train with the default parameters
 
-The dataset with the different classes of mushrooms has to be in the folder `data/images/`.
-The JSON file containing the annotation information should be in `data/`
+By default, the script expects to have a `data` composed of the JSON files `train.json` and `test.json` as well as a `images` directory containing the dataset.
 
-Please run
+To train the default model with the default parameters, run:
 ```sh
-
+python main.py --gpu
 ```
+See the next section for details about the script's paramerts.
 
 ### Train with other parameters
 
