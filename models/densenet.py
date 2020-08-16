@@ -1,9 +1,20 @@
-"""dense net in pytorch
-[1] Gao Huang, Zhuang Liu, Laurens van der Maaten, Kilian Q. Weinberger.
-    Densely Connected Convolutional Networks
-    https://arxiv.org/abs/1608.06993v5
 """
+INFO8010: Mushroom classification
+Authors: Folon Nora, Horbach Amadis, Tahiraj Arian
 
+Parts of the code are inspired from:
+    - Title: PyTorch Image Classification
+      Authors: Ben Trevett
+      Availability: https://github.com/bentrevett/pytorch-image-classification
+
+    - Title: Pytorch-cifar100
+      Authors: weiaicunzai
+      Availability: https://github.com/weiaicunzai/pytorch-cifar100
+
+    - Title: Bag of Tricks for Image Classification with Convolutional Neural Networks
+      Authors: weiaicunzai
+      Availability: https://github.com/weiaicunzai/Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks
+"""
 import torch
 import torch.nn as nn
 import torchvision.models as models
