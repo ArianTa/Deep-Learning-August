@@ -132,7 +132,7 @@ python main.py --gpu \
 The tensorboard logs and the weights of the model will be saved in the `results` directory.
 
 ## Links
-The state dicts of the model, the optimizer and the scheduler as well as the final number of epochs after training (i.e after running the previous command) are downloadable [here](https://we.tl/t-LkrbHnah5V).
+The state dicts of the model, the optimizer and the scheduler as well as the final number of epochs after training (i.e after running the previous command) can be downloaded [here](https://we.tl/t-LkrbHnah5V).
 
 ## Meta
 
